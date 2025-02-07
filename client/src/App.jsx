@@ -109,14 +109,14 @@ function App() {
           <ShoppingLayout />
       }>
       
-        <Route path="account" element={<ShoppingAccount />} />
-        <Route path="checkout" element={<ShoppingCheckout />} />
-        <Route path="home" element={<ShoppingHome />} />
+        <Route path="account" element={<ShoppingAccount/>} />
+        <Route path="checkout" element={<ShoppingCheckout/>} />
+        <Route path="home" element={<ShoppingHome />}/>
         <Route path="listing" element={<ShoppingListing />} />
         <Route path="product" element={<ProductDetails/>}/>
-        <Route path="paypal-return" element={<PaypalReturnPages />} />
-        <Route path="payment-success" element={<PayementSuccessPage />} />
-        <Route path="search" element={<SearchProduct />} />
+        <Route path="paypal-return" element={<PaypalReturnPages/>} />
+        <Route path="payment-success" element={<PayementSuccessPage/>} />
+        <Route path="search" element={<SearchProduct/>} />
         
       </Route>
       

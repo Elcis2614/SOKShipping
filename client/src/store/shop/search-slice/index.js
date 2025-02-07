@@ -29,8 +29,6 @@ export const getSearchResults = createAsyncThunk(
         };
       }
 
-      console.log('Making search request for:', sanitizedKeyword);
-
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/shop/search/${sanitizedKeyword}`,
         {
