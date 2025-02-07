@@ -7,17 +7,8 @@ function CheckAuth({isAuthenticated, user, children}) {
     
     const location = useLocation()
     if(location.pathname === '/'){
-      if(!isAuthenticated){
-        return  <Navigate to="/auth/login" />;
-      }
-      else{
-        if(user?.role === 'admin'){
-          return  <Navigate to="/admin/dashboard" />;
-        }else{
-          return  <Navigate to="/shop/home" />;
-        } 
-      }
-    
+      console.log("We were here");
+      return  <Navigate to="/shop/home" />;
     }
     
     if(!isAuthenticated && !(

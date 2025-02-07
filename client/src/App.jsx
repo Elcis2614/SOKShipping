@@ -48,19 +48,19 @@ function App() {
   }, [dispatch]);
   
   
-  useEffect(() => {
-    console.log("Auth state changed:", { isAuthenticated, isLoading, user });
-    if (!isAuthenticated && !isLoading) {
-      toast({
-        title: "Session expired",
-        description: "Please log in again.",
-        status: "error",
-      });
-      navigate('/auth/login');
-    }
-  }, [isAuthenticated, isLoading, user]);
+  // useEffect(() => {
+  //   console.log("Auth state changed:", { isAuthenticated, isLoading, user });
+  //   if (!isAuthenticated && !isLoading) {
+  //     toast({
+  //       title: "Session expired",
+  //       description: "Please log in again.",
+  //       status: "error",
+  //     });
+  //     navigate('/auth/login');
+  //   }
+  // }, [isAuthenticated, isLoading, user]);
 
-  console.log("Render - isLoading:", isLoading, "user:", user);
+  // console.log("Render - isLoading:", isLoading, "user:", user);
 
   if (isLoading) {
     return <Skeleton className="w-[600px] h-[600px] rounded-full" />;
@@ -106,9 +106,7 @@ function App() {
       </Route>
       
       <Route path="/shop" element={
-        <CheckAuth isAuthenticated={isAuthenticated} user={user}>
           <ShoppingLayout />
-        </CheckAuth>
       }>
       
         <Route path="account" element={<ShoppingAccount />} />

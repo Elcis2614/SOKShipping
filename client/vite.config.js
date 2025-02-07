@@ -28,7 +28,7 @@ export default defineConfig({
             '@radix-ui/react-toast'
           ],
           'icons-vendor': ['lucide-react', 'react-icons'],
-          'utils-vendor': ['axios', 'lodash-es', 'class-variance-authority', 'clsx', 'tailwind-merge']
+          'utils-vendor': ['axios', 'class-variance-authority', 'clsx', 'tailwind-merge']
         }
       }
     }
