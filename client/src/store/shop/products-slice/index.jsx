@@ -22,7 +22,7 @@ export const fetchAllFilteredProducts = createAsyncThunk(
 
             // Make the GET request with query parameters
             //const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/shop/products/get?${query}`);
-            const result = await axios.get(`http://localhost:5001/api/shop/products/get?${query}`);
+            const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/shop/products/get?${query}`)
             // Return the data in the correct format
             return result.data; 
         } catch (error) {
@@ -36,7 +36,7 @@ export const fetchProductDetails = createAsyncThunk(
   "/products/fetchProductDetails",
   async (id) => {
     try {
-      const req = `http://localhost:5001/api/shop/products/get/${id}`;
+      const req = `${import.meta.env.VITE_API_URL}/api/shop/products/get/${id}`;
       const result = await axios.get(req);
       // Return the actual product data
       return result.data;

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Route, Routes, useNavigate } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import AdminLayout from './components/admin-view/layout'
 import AuthLayout from './components/auth/layout'
@@ -23,7 +23,6 @@ import ProductDetails from './pages/shopping-view/product-details'
 import ShoppingListing from './pages/shopping-view/listing'
 import UnAuthPage from './pages/unauth-page'
 import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from './hooks/use-toast'
 import PaypalReturnPages from './pages/shopping-view/paypal-return'
 import PayementSuccessPage from './pages/shopping-view/payment-success'
 import SearchProduct from './pages/shopping-view/search'
@@ -36,7 +35,6 @@ function App() {
   });
   
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Initialize navigate
   
   // Hooks should always be called unconditionally
   useEffect(() => {
@@ -47,26 +45,10 @@ function App() {
     });
   }, [dispatch]);
   
-  
-  // useEffect(() => {
-  //   console.log("Auth state changed:", { isAuthenticated, isLoading, user });
-  //   if (!isAuthenticated && !isLoading) {
-  //     toast({
-  //       title: "Session expired",
-  //       description: "Please log in again.",
-  //       status: "error",
-  //     });
-  //     navigate('/auth/login');
-  //   }
-  // }, [isAuthenticated, isLoading, user]);
-
-  // console.log("Render - isLoading:", isLoading, "user:", user);
 
   if (isLoading) {
     return <Skeleton className="w-[600px] h-[600px] rounded-full" />;
   }
-
-  console.log(isLoading, user)
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
