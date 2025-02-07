@@ -11,7 +11,8 @@ dotenv.config();  // will read all env. created
 // Enhanced CORS configuration
 const allowedOrigins = [
     'https://e-commerce-instashop-3.onrender.com',    // Production frontend
-    'http://localhost:5173'                           // Local development
+    'http://localhost:5173',                           // Local development
+    'http://localhost:4173',                           // local production test
 ];
 //#region Import routes
 import authRouter from './routes/auth/auth-routes.js';

@@ -26,7 +26,6 @@ async function seedUsers(){
   );
   return insertedUsers;
 }
-
 async function seedProducts(){
   await db.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
   await db.query(`
@@ -60,8 +59,6 @@ async function seedProducts(){
   );
   return insertedProducts;
 }
-
-
 async function addSearchCol(){
   db.query(`ALTER TABLE products
     ADD search TSVECTOR 
@@ -105,7 +102,9 @@ async function seedSearchFunction(){
 }
 const executer = async function(){
   try{
-    //await addSearchCol();
+    await seedUsers();
+    await seedProducts();
+    await addSearchCol();
     await seedSearchFunction();
   }catch(err){
     console.log(err);
