@@ -8,7 +8,7 @@ import cors from 'cors';
 dotenv.config();  // will read all env. created
 // Enhanced CORS configuration
 const allowedOrigins = [
-    'sok-shipping.vercel.app',                          // Production frontend
+    'https://sok-shipping.vercel.app',                  // Production frontend
     'http://localhost:5173',                           // Local development
     'http://localhost:4173',                          // local production test
 ];
