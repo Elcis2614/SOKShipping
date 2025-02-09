@@ -5,8 +5,9 @@ import bcrypt from 'bcryptjs/dist/bcrypt.js';
 async function seedUsers(){
   await db.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
   await db.query(`
+    DROP TABLE IF EXISTS users;
     CREATE TABLE IF NOT EXISTS users (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      _id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       fname VARCHAR(255) NOT NULL,
       lname VARCHAR(255) NOT NULL,
       mname VARCHAR(255),
@@ -29,8 +30,9 @@ async function seedUsers(){
 async function seedProducts(){
   await db.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
   await db.query(`
+    DROP TABLE IF EXISTS products;
     CREATE TABLE IF NOT EXISTS products (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      _id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       title VARCHAR(255) NOT NULL,
       description TEXT NOT NULL,
       category VARCHAR(255) NOT NULL,
@@ -89,7 +91,7 @@ async function seedSearchFunction(){
       )
       as
       $$
-      SELECT id, title, description, category, brand, price, "salePrice", "totalStock", images,
+      SELECT _id, title, description, category, brand, price, "salePrice", "totalStock", images,
         ts_rank(search, websearch_to_tsquery('english', term)) +
         ts_ranK(search, websearch_to_tsquery('simple', term)) as rank
       FROM products
