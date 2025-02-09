@@ -104,6 +104,7 @@ const executer = async function(){
   try{
     const client = db.getClient();
     if(client){
+      console.log("Connected to the database");
       await seedUsers();
       await seedProducts();
       await addSearchCol();
