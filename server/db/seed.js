@@ -49,6 +49,7 @@ async function seedProducts(){
     products.map((prod) => {    
       //remove the unecessassry caracters  sometimes appear in images list url from 
       const images = prod.images.map((image) => image.replace(reg, "$2"));
+      console.log("Executed", images);
       return db.query(`
         INSERT INTO products(title, description, category, brand, price, salePrice, images)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
@@ -100,21 +101,13 @@ async function seedSearchFunction(){
     `)
 }
 const executer = async function(){
-
   try{
-    const client = db.getClient();
-    if(client){
-      console.log("Connected to the database");
-      await seedUsers();
-      await seedProducts();
-      await addSearchCol();
-      await seedSearchFunction();
-    }
-    else{
-      console.error("Error testing connection to cliend db")
-    }
+    await seedUsers();
+    await seedProducts();
+    await addSearchCol();
+    await seedSearchFunction();
   }catch(err){
-    console.error("Couldnt connect", err);
+    console.log(err);
   }
 }
 
