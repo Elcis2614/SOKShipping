@@ -51,7 +51,7 @@ async function seedProducts(){
       const images = prod.images.map((image) => image.replace(reg, "$2"));
       console.log("Executed", images);
       return db.query(`
-        INSERT INTO products(title, description, category, brand, price, salePrice, images)
+        INSERT INTO products(title, description, category, brand, price, "salePrice", images)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
         [prod.title, prod.description, prod.category, prod.brand,
             prod.price, prod.price, [...images]])
@@ -89,7 +89,7 @@ async function seedSearchFunction(){
       )
       as
       $$
-      SELECT _id, title, description, category, brand, price, "salePrice", "totalStock", images,
+      SELECT id, title, description, category, brand, price, "salePrice", "totalStock", images,
         ts_rank(search, websearch_to_tsquery('english', term)) +
         ts_ranK(search, websearch_to_tsquery('simple', term)) as rank
       FROM products
