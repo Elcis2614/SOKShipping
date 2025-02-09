@@ -1,18 +1,16 @@
 // server/server.js 
 
 import dotenv from 'dotenv';
-
 import express from 'express';
-import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 dotenv.config();  // will read all env. created
 // Enhanced CORS configuration
 const allowedOrigins = [
-    'https://e-commerce-instashop-3.onrender.com',    // Production frontend
+    'sok-shipping.vercel.app',                          // Production frontend
     'http://localhost:5173',                           // Local development
-    'http://localhost:4173',                           // local production test
+    'http://localhost:4173',                          // local production test
 ];
 //#region Import routes
 import authRouter from './routes/auth/auth-routes.js';
@@ -60,11 +58,8 @@ for (const envVar of requiredEnvVars) {
 //     }
 // };
 
-
-
 const app = express();
 const PORT = process.env.PORT || 5001;
-
 
 // IMPORTANT: Handle Stripe webhook endpoint before any other middleware
 // This must come before other body parsers
