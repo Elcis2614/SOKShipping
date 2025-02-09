@@ -52,7 +52,7 @@ async function seedProducts(){
       console.log("Executed", images);
       return db.query(`
         INSERT INTO products(title, description, category, brand, price, "salePrice", images)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+        VALUES ($1,$2,$3,$4,$5,$6,$7)`,
         [prod.title, prod.description, prod.category, prod.brand,
             prod.price, prod.price, [...images]])
   })
@@ -61,7 +61,7 @@ async function seedProducts(){
 }
 async function addSearchCol(){
   db.query(`ALTER TABLE products
-    ADD search TSVECTOR 
+    ADD search TSVECTOR
     GENERATED ALWAYS AS (
       SETWEIGHT(TO_TSVECTOR('simple', title), 'A') || ' ' ||
       SETWEIGHT(TO_TSVECTOR('english', description),  'B') :: TSVECTOR
