@@ -1,10 +1,10 @@
 // client/src/components/shopping-view/header.jsx 
 
 import { shoppingViewHeaderMenuItems } from '@/config'
-import { logoutUser, resetTokenAndCredentials } from '@/store/auth-slice'
+import { resetTokenAndCredentials } from '@/store/auth-slice'
 import { fetchCartItems } from '@/store/shop/cart-slice'
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
-import { Home, Loader2Icon, LogOut, Menu, ShoppingCart, UserCog } from 'lucide-react'
+import { Loader2Icon, LogOut, Menu, ShoppingCart, UserCog, User } from 'lucide-react'
 import { FaSearch } from "react-icons/fa";
 
 import { useEffect, useState } from 'react'
@@ -119,8 +119,8 @@ function HeaderRightContent(){
                 />
             </Sheet>
             
-            {/* Avatar Dropdown */}
-            <DropdownMenu>
+            {isAuthenticated ? 
+                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Avatar className="bg-black hover:bg-black cursor-pointer">
                         <AvatarFallback className="text-gray-900 font-extrabold">
@@ -155,7 +155,15 @@ function HeaderRightContent(){
                         Logout
                     </DropdownMenuItem>
                 </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenu> 
+                :
+                <Link to='/auth/login'>
+                    <div className='flex pointer-cursor'>
+                        <User className='w-8'/>
+                        <div className='whitespace-nowrap underline font-semibold'>Sign in</div>
+                    </div>
+                </Link>
+            }
         </div>
     );
 }

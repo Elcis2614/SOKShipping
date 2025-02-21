@@ -45,10 +45,11 @@ function AuthLogin() {
                     Sign in to your account 
                 </h1>
                 <p>if you don't an account
-                    <Link className="font-bold ml-2 text-primary hover:underline" to="/auth/register">
+                    <Link className="font-bold ml-2 text-primary underline text-yellow-500" to="/auth/register">
                        register 
                     </Link>
                 </p>
+                
             </div>
             <CommonForm
                 formControls={loginFormControls}
