@@ -8,6 +8,7 @@ import { registerUser } from '@/store/auth-slice';
 import { useDispatch } from 'react-redux';
 import { toast, useToast } from '@/hooks/use-toast';
 
+
 const initialState = {
     userName: '',
     email: '',
@@ -19,6 +20,7 @@ function AuthRegister() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const {toast} = useToast();
+    const [isFilled, setIsFilled] = useState(false);
     
 
     function onSubmit(event) {
@@ -46,8 +48,8 @@ function AuthRegister() {
                 <h1 className="text-3xl font-bold tracking-tight text-foreground">
                     Create a new Account
                 </h1>
-                <p>Already have an account
-                    <Link className="font-meduim ml-2 text-primary hover:underline" to="/auth/login">
+                <p>Already have an account ?
+                    <Link className="font-bold ml-2 text-primary underline text-yellow-500" to="/auth/login">
                         Login
                     </Link>
                 </p>
@@ -58,6 +60,7 @@ function AuthRegister() {
                 formData={formData}
                 setFormData={setFormData}
                 onSubmit={onSubmit}
+                isBtnDisabled={!isFilled}
             />
         </div>
     )

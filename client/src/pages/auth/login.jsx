@@ -49,6 +49,7 @@ function AuthLogin() {
                        register 
                     </Link>
                 </p>
+                
             </div>
             <CommonForm
                 formControls={loginFormControls}

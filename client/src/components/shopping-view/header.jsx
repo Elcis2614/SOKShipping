@@ -1,10 +1,10 @@
 // client/src/components/shopping-view/header.jsx 
 
 import { shoppingViewHeaderMenuItems } from '@/config'
-import { logoutUser, resetTokenAndCredentials } from '@/store/auth-slice'
+import { resetTokenAndCredentials } from '@/store/auth-slice'
 import { fetchCartItems } from '@/store/shop/cart-slice'
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
-import { Home, Loader2Icon, LogOut, Menu, ShoppingCart, UserCog } from 'lucide-react'
+import { Loader2Icon, LogOut, Menu, ShoppingCart, UserCog } from 'lucide-react'
 import { FaSearch } from "react-icons/fa";
 
 import { useEffect, useState } from 'react'
