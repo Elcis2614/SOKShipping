@@ -89,7 +89,7 @@ function App() {
       
       <Route path="/shop" element={
           <ShoppingLayout />
-      }>
+      }> 
       
         <Route path="account" element={<ShoppingAccount/>} />
         <Route path="checkout" element={<ShoppingCheckout/>} />
