@@ -25,7 +25,7 @@ function Address({setCurrentSelectedAddress, selectedId}) {
     const [formData, setFormData] = useState(initialAddressFormData);
     const [ currentEditedId, setCurrentEditedId ] = useState(null);
     const dispatch = useDispatch();
-    const {user} = useSelector((state )=> state.auth);
+    const {user, isAuthenticated} = useSelector((state )=> state.auth);
     const { addressList } = useSelector((state)=> state.shopAddress);
     const {toast} = useToast()
     
@@ -115,6 +115,7 @@ function Address({setCurrentSelectedAddress, selectedId}) {
         <div className='col-span-full'>
             <p></p>
         </div>
+        {isAuthenticated&&
         <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6'>
                 {addressList && addressList.length > 0 ? (
                 addressList.map((singleAddressItem) => (
@@ -134,9 +135,10 @@ function Address({setCurrentSelectedAddress, selectedId}) {
                 </div>
             )}
         </div>
+        }
 
        {/* Add New Address Form Section */}
-       <div className="border-t border-gray-200">
+       <div className="">
             <CardHeader className="p-6">
                 <CardTitle className="text-xl font-bold text-gray-900">
                     Enter your info

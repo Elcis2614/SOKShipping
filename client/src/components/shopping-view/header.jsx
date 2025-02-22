@@ -87,27 +87,28 @@ function HeaderRightContent(){
     }, [dispatch, isAuthenticated, user?.id]);
 
     return (
-        <div className="flex items-center space-x-4 w-full lg:w-auto">
+        <div className="flex items-center md:space-x-6 space-x-2 w-full lg:w-auto">
             {/* Cart Button */}
             <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
                 <Button 
-                    onClick={() => {setOpenCartSheet(true); console.log("the size", Array.isArray(cartItems))}}
+                    onClick={() => {setOpenCartSheet(true)}}
                     variant="outline" 
                     size="icon"
-                    className="relative"
+                    className="relative flex border-none hover:bg-transparent"
                     disabled={isLoading}
                 >
                     {isLoading ? (
                         <Loader2Icon className="h-4 w-4 animate-spin" />
                     ) : (
-                        <>
-                            <ShoppingCart className="h-6 w-6" />
+                        <div className='flex'>
+                            <ShoppingCart className="h-6 w-6 mr-1 items-center"/>
+                            <div className='whitespace-nowrap underline font-semibold text-[16px] hidden md:block'>Cart</div>
                             {cartItems?.length > 0 && (
-                                <span className="absolute top-[-5px] right-[2px] bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                <span className="absolute top-[-5px] left-[1px] bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-xs">
                                     {cartItems.length}
                                 </span>
                             )}
-                        </>
+                        </div>
                     )}
                     <span className="sr-only">User Cart</span>
                 </Button>
@@ -158,9 +159,9 @@ function HeaderRightContent(){
                 </DropdownMenu> 
                 :
                 <Link to='/auth/login'>
-                    <div className='flex pointer-cursor'>
-                        <User className='w-8'/>
-                        <div className='whitespace-nowrap underline font-semibold'>Sign in</div>
+                    <div className='flex pointer-cursor items-center'>
+                        <div><User className='mr-1 h-6 w-6'/></div>
+                        <div className='whitespace-nowrap underline font-semibold text-[16px] hidden md:block'>Sign in</div>
                     </div>
                 </Link>
             }

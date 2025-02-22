@@ -17,6 +17,7 @@ function AuthLogin() {
     const [formData, setFormData] = useState(initialState);
     const dispatch = useDispatch();
     const {toast} = useToast();
+    const [isFilled, setIsFilled] = useState(false);
     
 
     function onSubmit(event) {
@@ -57,6 +58,7 @@ function AuthLogin() {
                 formData={formData}
                 setFormData={setFormData}
                 onSubmit={onSubmit}
+                isBtnDisabled={!isFilled}
             />
         </div>
     )
