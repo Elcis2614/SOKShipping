@@ -25,6 +25,7 @@ function AuthLogin() {
         
         dispatch(loginUser(formData)).then((data) => {
             if (data?.payload?.success) {
+                console.log("Logged user", data?.payload);
                 toast({
                     title : data?.payload?.message,
                 });
@@ -58,7 +59,7 @@ function AuthLogin() {
                 formData={formData}
                 setFormData={setFormData}
                 onSubmit={onSubmit}
-                isBtnDisabled={!isFilled}
+                isBtnDisabled={isFilled}
             />
         </div>
     )

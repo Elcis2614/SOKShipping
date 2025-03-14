@@ -6,21 +6,49 @@ import axios from "axios"
 const initialState = {
     isLoading : false,
     ProductList : []
-
 }
 
+export const uploadImagesToCloud = createAsyncThunk(
+    "/products/uploadImagesToCloud",
+    async (files) => {
+        try{
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/products/upload-image`, {
+                headers : {
+                    'content-Type' : 'application/json'
+                }
+            });
+            const {signature, timestamp} = response.data;
+            if (signature){
+                const url = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
+                const result = await Promise.all(
+                    files.map((file) => {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append("api_key", import.meta.env.VITE_CLOUDINARY_API_KEY);
+                        formData.append("timestamp", timestamp);
+                        formData.append("signature", signature);
+                        return axios.post(url, formData, {
+                            headers: {
+                                "X-Requested-With": "XMLHttpRequest"
+                            }
+                        })
+                    })
+                )
+                return result;
+            }
+        } catch(err){
+            console.log("Error while uploading : ", err);
+            return
+        }
+    }
+)
 export const addNewProduct = createAsyncThunk(
     "/products/addNewProduct",
-   async (formData) => {
-        const result = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/products/add`, formData, {
-            headers : {
-                'content-Type' : 'application/json'
-            }
-        
-        });
+   async ({formData, signature}) => {
         return result?.data;
     }
 );
+
 export const fetchAllProducts = createAsyncThunk(
     "/products/fetchAllProducts",
    async () => {

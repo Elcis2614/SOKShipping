@@ -81,8 +81,6 @@ function Address({setCurrentSelectedAddress, selectedId}) {
         dispatch(fetchAllAddresses(user?.id));
     }, [dispatch]);
     
-    console.log('addressList: ', addressList)
-    
     function handleDeleteAddress(getCurrentAddress){
         console.log(getCurrentAddress);
         
@@ -143,6 +141,7 @@ function Address({setCurrentSelectedAddress, selectedId}) {
                 <CardTitle className="text-xl font-bold text-gray-900">
                     Enter your info
                 </CardTitle>
+                <div className='italic'>Fill up the form to get a feedback on your order</div>
             </CardHeader>
             <CardContent className="p-6 pt-0">
                 <CommonForm

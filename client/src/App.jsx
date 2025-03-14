@@ -37,18 +37,18 @@ function App() {
   const dispatch = useDispatch();
   
   // Hooks should always be called unconditionally
-  useEffect(() => {
-    // get the token from sessionStorage
-    const token = JSON.parse(sessionStorage.getItem('token'));
-    dispatch(checkAuth(token)).then((action) => {
-      console.log("checkAuth result:", action);
-    });
-  }, [dispatch]);
+  // useEffect(() => {
+  //   // get the token from sessionStorage
+  //   const token = JSON.parse(sessionStorage.getItem('token'));
+  //   dispatch(checkAuth(token)).then((action) => {
+  //     console.log("checkAuth result:", action);
+  //   });
+  // }, [dispatch]);
   
 
-  if (isLoading) {
-    return <Skeleton className="w-[600px] h-[600px] rounded-full" />;
-  }
+  // if (isLoading) {
+  //   return <Skeleton className="w-[600px] h-[600px] rounded-full" />;
+  // }
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">

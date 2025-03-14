@@ -18,7 +18,7 @@ import { SheetContent, SheetTrigger, Sheet } from '../ui/sheet'
 import UserCartWrapper from './cart-wrapper'
 import logo from '../../assets/logo.jpg'
 
-function MenuItems(){
+function MenuItems({setOpen = undefined}){
     const navigate = useNavigate();
     const location = useLocation();
     const [ searchParams, setSearchParams ] = useSearchParams();
@@ -36,7 +36,7 @@ function MenuItems(){
               } : null
         
         sessionStorage.setItem('filters', JSON.stringify(currentFilter));
-      
+        setOpen && setOpen(false);
         // help to navigate through the header link with appropriete pathname 
         if (location.pathname.includes('listing') && currentFilter !== null) {
             setSearchParams(new URLSearchParams(`?category=${getCurrentItemMenuItem.id}`));
@@ -193,6 +193,7 @@ function SearchBar(){
 
 function ShoppingHeader() {
     // const {isAuthenticated} = useSelector(state=> state.auth)
+    const [open, setOpen] = useState(false);
     return (
         <header className="sticky top-0 z-40 w-full  bg-background">
             <div className="flex items-center justify-between px-4 md:-6  ">
@@ -215,7 +216,7 @@ function ShoppingHeader() {
             </div>
             <div className="flex h-16 items-center justify-between px-4 md:-6">
                 {/* Mobile Menu Trigger */}
-                <Sheet>
+                <Sheet open={open} onOpenChange={setOpen}>
                     <SheetTrigger asChild>
                         <Button variant="outline" size="icon" className="lg:hidden">
                             <Menu  className="h-6 w-6"/>
@@ -223,7 +224,7 @@ function ShoppingHeader() {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="w-full max-w-xs">
-                        <MenuItems />
+                        <MenuItems setOpen={setOpen}/>
                     </SheetContent>
                 </Sheet>
                 <div className='lg:hidden'>
