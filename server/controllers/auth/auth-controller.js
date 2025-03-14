@@ -2,6 +2,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../../models/User.js';
+import * as db from '../../db/index.js';
 
 // Cookie options based on environment 
 export const getCookieOptions = () => {
@@ -51,49 +52,42 @@ export const registerUser = async(req, res) => {
 export const loginUser = async(req, res) => {
     const { email, password } = req.body;
     try { 
-        const checkUser = await fetch("https://fakestoreapi.com/users/1").then((res) => res.json());
+        //const checkUser = await fetch().then((res) => res.json());
+        const checkUser = await db.query('SELECT * FROM users WHERE email = $1 AND password = $2', [email, password]);
         if(!checkUser) {
             return res.json({
                 success: false,
-                message: "User doesn't exist! Please register first"
+                message: "Wrong Credentials, please try again"
             });
         }
         
-        //const checkPasswordMatch = await bcrypt.compare(password, checkUser.password);
-        const checkPasswordMatch = true;
-        if (!checkPasswordMatch) {
-            return res.json({
-                success: false,
-                message: "Incorrect Password! Please try again",
-            });
-        }
+        // //const checkPasswordMatch = await bcrypt.compare(password, checkUser.password);
+        // const checkPasswordMatch = true;
+        // if (!checkPasswordMatch) {
+        //     return res.json({
+        //         success: false,
+        //         message: "Wrong Credentials, please try again",
+        //     });
+        // }
         
-        const token = jwt.sign({
-            id: checkUser._id, 
-            role: checkUser.role, 
-            email: checkUser.email,
-            userName: checkUser.userName,
-        }, 'CLIENT_SECRET_KEY', { expiresIn: '120m' });
+        const user = {
+            id: checkUser[0]?._id, 
+            role: checkUser[0]?.role, 
+            email: checkUser[0]?.email,
+            userName: checkUser[0]?.userName,
+        };
+        console.log("Connected user : ", user);
+        const token = jwt.sign(user, 'CLIENT_SECRET_KEY', { expiresIn: '120m' });
         
-        // res.cookie('token', token, getCookieOptions()).json({
-        //     success: true,
-        //     message: 'Logged in successfully',
-        //     user: {
-        //         email: checkUser.email,
-        //         role: checkUser.role,
-        //         id: checkUser._id,
-        //         userName: checkUser.userName
-        //     }
-        // });
+        res.cookie('token', token, getCookieOptions()).json({
+            success: true,
+            message: 'Logged in successfully',
+            user: {...user}
+        });
         res.status(200).json({
             success: true,
             message: 'Logged in successfully',
-            user: {
-                email: checkUser.email,
-                role: checkUser.role,
-                id: checkUser._id,
-                userName: checkUser.userName
-            },
+            user: {...user},
             token: token
         });
         
