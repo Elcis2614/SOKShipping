@@ -1,8 +1,7 @@
 // server/controllers/admin/products-controller.js
 import mongoose from 'mongoose';
 import {imageUploadUtil, getSignature} from "../../helpers/cloudinary.js";
-import Product from '../../models/Product.js'; // Add this line if it's missing
-
+import {insertProduct, query} from '../../db/index.js';
 
 
 const handleImageUpload = async(req, res) => {
@@ -23,36 +22,35 @@ const handleImageUpload = async(req, res) => {
 const addProduct = async(req, res) =>{
     try {
         const {
-            image,
+            images,
             title,  // Make sure this is coming from the request body
             description,
             category,
-            brand,
             price,
             salePrice,
             totalStock,
+            tags
         } = req.body;
         
-        // Check if title is present and valid
-        if (!title) {
+        // Check if the form is complete is present and valid
+        if (!title || !description || !category || !price || !totalStock ||
+            tags?.length == 0 && images.length == 0) {
+            console.log("Executed");
             return res.status(400).json({
                 success: false,
-                message: "Title is required!",
+                message: "Incorrect form was submitted",
             });
         }
-
-        const newlyCreatedProduct = new Product({
-            image,
-            title,  // Pass the title to the new product
+        const newlyCreatedProduct =  await insertProduct({
+            images,
+            title,
             description,
             category,
-            brand,
             price,
             salePrice,
             totalStock,
+            tags
         });
-        
-        await newlyCreatedProduct.save();
         
         res.status(201).json({
             success: true,
@@ -60,7 +58,7 @@ const addProduct = async(req, res) =>{
         });
         
     } catch (error) {
-        //console.log(error)
+        console.log(error);
         res.status(500).json({
             success : false,
             message : 'Error occured'
@@ -72,7 +70,7 @@ const addProduct = async(req, res) =>{
 // fetch all products 
 const fetchAllProducts = async(req, res) => {
     try {
-        listOfProducts = await Product.find({});
+        const listOfProducts = await query(`SELECT * FROM products`);
         res.status(200).json({
             success : true,
             data : listOfProducts
@@ -102,7 +100,7 @@ const editProduct = async(req, res) => {
         }
         
         const {
-            image,
+            images,
             title,
             description,
             category,
@@ -126,7 +124,7 @@ const editProduct = async(req, res) => {
         findProduct.price = price === '' ? 0 : price || findProduct.price;
         findProduct.salePrice = salePrice === '' ? 0 : salePrice || findProduct.salePrice;
         findProduct.totalStock = totalStock || findProduct.totalStock;
-        findProduct.image = image || findProduct.image;
+        findProduct.images = images || findProduct.images;
         
         await findProduct.save();
         res.status(200).json({

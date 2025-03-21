@@ -40,7 +40,8 @@ async function seedProducts(){
       price INT NOT NULL,
       "salePrice" INT NOT NULL,
       "totalStock" INT DEFAULT 1,
-      images TEXT [] NULL
+      images TEXT [] NULL,
+      tags TEXT [] NULL
     );`);
   const products = await getProducts();
 

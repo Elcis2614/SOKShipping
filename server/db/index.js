@@ -7,7 +7,7 @@ pool.on('error', (err) => {console.log("An error occured while creating the pool
 
 export const query = async (text, params=undefined) => {
     const res = await pool.query(text, params).then((res) => res.rows).catch((err) => {
-        console.error(`An error occured while excecuting : ${text} \n The Error : ${err.message}`);
+         throw new Error(`An error occured while excecuting : ${text} \n The Error : ${err.message}`);
     });
     return res;
 }
@@ -16,3 +16,10 @@ export const getClient = () => {
     return pool.connect()
 }
 
+export const insertProduct = async (
+    {images,title,description,category,price,salePrice,totalStock,tags}) => {
+    const queryTxt = `INSERT INTO products(title, description, category, price, "salePrice", images, tags)
+    VALUES ($1,$2,$3,$4,$5,$6,$7)`;
+    const result = await query(queryTxt, [title, description, category, price, salePrice, [...images], [...tags]]);
+    return result;
+}
