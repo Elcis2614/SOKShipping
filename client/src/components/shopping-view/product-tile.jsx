@@ -118,7 +118,7 @@ function ShoppingProductTile({product})
     const isOutOfStock = remainingStock <= 0;
     const isLowStock = false //remainingStock > 0 && remainingStock < 10;
     const hasDiscount = product.salePrice < product.price;
-    const categoryName = JSON.parse(product?.category);
+    const categoryName = product?.category;
     return (
         <Card className="w-full max-w-sm mx-auto flex flex-col cursor-pointer">
             <div onClick = {() => {handleGetProductDetails(product?._id)}}>
@@ -142,8 +142,8 @@ function ShoppingProductTile({product})
                 <CardContent className="p-4">
                     <h2 className="text-xl font-bold mb-2">{product?.title}</h2>
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-muted-foreground">{categoryName?.name || 'Unknown'}</span>
-                        <span className="text-sm text-muted-foreground">{product?.brand || 'Unknown'}</span>
+                        <span className="text-sm text-muted-foreground">{categoryName || 'Unknown'}</span>
+                        <span className="text-sm text-muted-foreground">{product?.brand || ''}</span>
                     </div>
                     <div className="flex justify-between items-center mb-2">
                         <span className={`${hasDiscount ? 'line-through' : ''} text-lg font-semibold text-primary`}>

@@ -45,7 +45,7 @@ export const loginFormControls = [
 
 export const addProductFormElements = [
     {
-      label: "Title",
+      label: "Product title",
       name: "title",
       componentType: "input",
       type: "text",
@@ -62,26 +62,19 @@ export const addProductFormElements = [
       name: "category",
       componentType: "select",
       options: [
-        { id: "men", label: "Men" },
-        { id: "women", label: "Women" },
-        { id: "kids", label: "Kids" },
-        { id: "watch", label: "Watch" },
+        { id: "vehicles", label: "Vehicles" },
+        { id: "electronics", label: "Electronics" },
+        { id: "Fashion", label: "Fashion" },
         { id: "accessories", label: "Accessories" },
         { id: "footwear", label: "Footwear" },
       ],
     },
     {
-      label: "Brand",
-      name: "brand",
-      componentType: "select",
-      options: [
-        { id: "nike", label: "Nike" },
-        { id: "adidas", label: "Adidas" },
-        { id: "puma", label: "Puma" },
-        { id: "levi", label: "Levi's" },
-        { id: "zara", label: "Zara" },
-        { id: "h&m", label: "H&M" },
-      ],
+      label: "Tags",
+      name: "tags",
+      componentType: "tags",
+      type: "text",
+      placeholder: "Press to add tags",
     },
     {
       label: "Price",

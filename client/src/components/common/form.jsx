@@ -1,8 +1,8 @@
 // client/src/components/common/form.jsx 
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
+import { Input, Tags } from '../ui/input';
 import { Label } from '../ui/label'
 import { 
     Select,
@@ -14,10 +14,17 @@ import { Textarea } from '../ui/textarea';
 
 function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText, isBtnDisabled }) {
 
+    useEffect(() => {
+        Object.keys(formData).every((item) => {
+            if(item !== 'tags'){
+                return formData[item] !== "";
+            }
+            return Tags.length !== 0;
+        })
+    }, [formData])
     function renderInputsByComponentType(getControlItem) {
         let element = null;
         const value = formData[getControlItem.name] || '';
-
 
         switch (getControlItem.componentType) {
             case 'input':
@@ -92,6 +99,16 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText,
 
                 break;
 
+            case 'tags':
+                element = (
+                    <Tags
+                        formData={formData}
+                        setFormData={setFormData}
+                        name={getControlItem.name}
+                        placeholder={getControlItem.placeholder}
+                    />
+                );
+                break;
             default:
                 element = (
                     <Input
@@ -108,11 +125,9 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText,
                         }
                         
                     className="w-full text-left border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
-                    
                     />
                 );
                 break;
-
         }
         return element;
     }
@@ -144,7 +159,6 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText,
                 >
                 {buttonText || 'Submit'}
             </Button>
-
         </form>
     )
 }

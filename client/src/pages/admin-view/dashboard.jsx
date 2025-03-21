@@ -19,9 +19,9 @@ function AdminDashboard() {
     const { toast } = useToast();
     const { isLoading, error, featureImageList } = useSelector((state) => state.commonFeature);
 
-    useEffect(() => {
-        dispatch(getFeatureImages());
-    }, [dispatch]);
+    // useEffect(() => {
+    //     dispatch(getFeatureImages());
+    // }, [dispatch]);
 
     async function handleUploadFeatureImage() {
         if (!uploadedImageUrl) {

@@ -22,14 +22,13 @@ import { Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 
 const initialFormData = {
-  image: null,
   title: '',
   description: '',
   category: '',
-  brand: '',
   price: "",
   salePrice: '',
   totalStock: '',
+  tags: [],
 }
 
 function AdminProducts() {
@@ -47,20 +46,26 @@ function AdminProducts() {
 
   function onSubmit(imageFiles) {
     dispatch(uploadImagesToCloud(imageFiles)).then(
-      (res, err) =>{
+      (res) =>{
         if(res)
         {
-          console.log("Well recieved", res?.payload);
-          const urls = res?.payload ? res.payload.map((item) => 
-          item?.data?.secure_url) 
-          : [];
-          console.log("The urles are", urls);
-        }
-        else {
-          console.error("Couldn't upload image", err?.message);
+          // const urls = res?.payload ? res.payload.map((item) => 
+          // item?.data?.secure_url) 
+          // : [];
+          const urls = res.payload;
+          return dispatch(addNewProduct(
+            {
+              images: urls,
+              ...formData
+            }))
         }
       }
-    );
+    ).then((res) => {
+      console.log("Product created", res.payload);
+    }).catch((err) => {
+      console.error(err);
+    });
+    
   }
 
   function handleDelete(getCurrentProductId) {
@@ -72,9 +77,11 @@ function AdminProducts() {
   }
 
   function isFormValid() {
-    return Object.keys(formData)
+    const isValid = Object.keys(formData)
       .map((key) => formData[key] !== "")
       .every((item) => item);
+    console.log("The form is ", isValid);
+    return isValid;
   }
 
   useEffect(() => {
