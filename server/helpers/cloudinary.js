@@ -31,4 +31,8 @@ export async function getSignature(){
     return {timestamp, signature};
 }
 
+export async function destroyImages(images){
+    return;
+}
+
 export const upload = multer({storage});

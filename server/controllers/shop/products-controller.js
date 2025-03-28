@@ -62,12 +62,13 @@ export const getProductDetails = async (req, res) => {
         //const product = await Product.findById(id);
         const qText = 'SELECT * FROM products where _id = $1';
         const product = await db.query(qText, [id]);
-        console.log("Fetched for product : ", product);
-        if (!product) return res.status(404).json({
-            success: false,
-            message: 'Product not found!',
-        });
-        res.status(200).json({
+        if (!product)  
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found!',
+            });
+        
+        return res.status(200).json({
             success: true,
             data: product,  // Ensure the response contains the `data` field with the product
         });
