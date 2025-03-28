@@ -11,7 +11,6 @@ import { SheetTitle } from '@/components/ui/sheet';
 import { SheetContent } from '@/components/ui/sheet';
 import { addProductFormElements } from '@/config';
 import { addNewProduct, uploadImagesToCloud } from '@/store/admin/products-slice';
-import { deleteProduct } from '@/store/admin/products-slice';
 import { editProduct } from '@/store/admin/products-slice';
 import { fetchAllProducts } from '@/store/admin/products-slice';
 import React, { useEffect, useState } from 'react'
@@ -38,7 +37,6 @@ function AdminProducts() {
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const [currentEditedId, setCurrentEditedId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
   const { productList } = useSelector(state => state.AdminProducts);
   const dispatch = useDispatch();
 
@@ -62,10 +60,10 @@ function AdminProducts() {
         (res) =>{
           if(res)
           {
-            // const urls = res?.payload ? res.payload.map((item) => 
-            // item?.data?.secure_url) 
-            // : [];
-            const urls = res.payload;
+            const urls = res?.payload ? res.payload.map((item) => 
+            item?.data?.secure_url) 
+            : [];
+
             return dispatch(addNewProduct(
               {
                 images: urls,

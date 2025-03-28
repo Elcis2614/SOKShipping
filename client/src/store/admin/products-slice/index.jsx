@@ -12,34 +12,30 @@ export const uploadImagesToCloud = createAsyncThunk(
     "/products/uploadImagesToCloud",
     async (files) => {
         try{
-            // const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/products/upload-image`, {
-            //     headers : {
-            //         'content-Type' : 'application/json'
-            //     }
-            // });
-            // const {signature, timestamp} = response.data;
-            // if (signature){
-            //     const url = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
-            //     const result = await Promise.all(
-            //         files.map((file) => {
-            //             const formData = new FormData();
-            //             formData.append('file', file);
-            //             formData.append("api_key", import.meta.env.VITE_CLOUDINARY_API_KEY);
-            //             formData.append("timestamp", timestamp);
-            //             formData.append("signature", signature);
-            //             return axios.post(url, formData, {
-            //                 headers: {
-            //                     "X-Requested-With": "XMLHttpRequest"
-            //                 }
-            //             })
-            //         })
-            //     )
-            //     return result;
-            //}
-            return ["https://res.cloudinary.com/dw7ygwb4p/image/upload/v1742496598/c91nvzccx80uuxmrvxac.jpg",
-                "https://res.cloudinary.com/dw7ygwb4p/image/upload/v1742496603/cdrisb1e3nn2ickqnrlg.jpg",
-                "https://res.cloudinary.com/dw7ygwb4p/image/upload/v1742496639/yqjhyacnrnmpw0005m9r.jpg"
-            ]
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/products/upload-image`, {
+                headers : {
+                    'content-Type' : 'application/json'
+                }
+            });
+            const {signature, timestamp} = response.data;
+            if (signature){
+                const url = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
+                const result = await Promise.all(
+                    files.map((file) => {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append("api_key", import.meta.env.VITE_CLOUDINARY_API_KEY);
+                        formData.append("timestamp", timestamp);
+                        formData.append("signature", signature);
+                        return axios.post(url, formData, {
+                            headers: {
+                                "X-Requested-With": "XMLHttpRequest"
+                            }
+                        })
+                    })
+                )
+                return result;
+            }
         } catch(err){
             console.log("Error while uploading : ", err);
             return
