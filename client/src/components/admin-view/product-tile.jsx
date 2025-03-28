@@ -1,63 +1,97 @@
 // client/src/components/admin-view/product-tile.jsx 
 
-import React from 'react'
+import React, { useState } from 'react'
+import { deleteProduct } from '@/store/admin/products-slice';
+import { fetchAllProducts } from '@/store/admin/products-slice';
+import { toast } from 'react-toastify';
 import { Button } from '../ui/button'
 import { CardFooter } from '../ui/card'
 import { CardContent } from '../ui/card'
 import { Card } from '../ui/card'
+import { 
+    Sheet,
+    SheetTrigger} from '../ui/sheet'
+import { AlertDialog } from '../ui/alert_dialog'
+import { useDispatch} from 'react-redux';
 
 function AdminProductTile({
     product,
     setFormData,
     setOpenCreateProductsDialog,
     setCurrentEditedId,
-    handleDelete
-  }) {
-    console.log(product);
+}) {
+    const dispatch = useDispatch();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    function handleDelete(productId) {
+    if(productId){
+        dispatch(deleteProduct(productId)).then(data => {
+        if (data?.payload?.success) {
+            toast("Product Deleted");
+            setIsDialogOpen(false);
+            dispatch(fetchAllProducts());
+        }
+        });
+
+    }
+    }
+
     return (
         <Card className="w-full max-w-sm mx-auto">
-        <div>
-            <div className="relative">
-                <img
-                    src={product?.images[0]}
-                    alt={product?.title}
-                    className="w-full h-[300px] object-cover rounded-t-lg"
-                />
-            
-            </div>
-            
-            <CardContent>
-                {/* Debug: Displaying the title */}
-                <h2 className="text-xl font-bold mb-2 mt-2">
+            <div>
+                <div className="relative">
+                    <img
+                        src={product?.images[0]}
+                        alt={product?.title}
+                        className="w-full h-[300px] object-cover rounded-t-lg"
+                    />
+
+                </div>
+
+                <CardContent>
+                    {/* Debug: Displaying the title */}
+                    <h2 className="text-xl font-bold mb-2 mt-2">
                         {product?.title ? product.title : "No Title Available"}
                     </h2>
-                <div className="flex justify-between items-center mb-2">
-                    <span className={`${product?.salePrice > 0 ? "line-through" : ""} 
-                    text-lg font-sembold text-primary`}>
-                    ${product?.price}
-                    </span>
+
                     {
-                        product?.salePrice > 0 ? <span className="text-lg font-bold">${product?.salePrice}</span> : null
+                        product?.salePrice !== product?.price ?
+                            <div className="flex justify-between items-center mb-2">
+                                <span className={"line-through text-lg font-semibold text-primary"}>
+                                    ${product?.price}
+                                </span>
+                                <span className="text-lg font-bold">
+                                    ${product?.salePrice}
+                                </span>
+                            </div> :
+                            <div className="flex justify-end items-center mb-2">
+                                <span className={"text-lg font-bold"}>
+                                    ${product?.price}
+                                </span>
+                            </div>
                     }
-                </div>
-            </CardContent>
-            
-            <CardFooter className="flex justify-between items-center">
-                <Button onClick={() => {
-                    setOpenCreateProductsDialog(true)
-                    setCurrentEditedId(product?._id)
-                    setFormData(product);
-                }}>Edit</Button>
-                <Button 
-                    onClick={()=> handleDelete(product?._id)}
-                    >
-                    Delete
-                </Button>
-            </CardFooter>
-        </div>
-            
+                </CardContent>
+
+                <CardFooter className="flex justify-between items-center">
+                    <Button onClick={() => {
+                        setOpenCreateProductsDialog(true)
+                        setCurrentEditedId(product?._id)
+                        setFormData(product);
+                    }}>Edit</Button>
+                    <Sheet open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <SheetTrigger>
+                            <Button>
+                                Delete
+                            </Button>
+                        </SheetTrigger>
+                        <AlertDialog title={"Delete Product"} handleCLick={() => {handleDelete(product?._id)}}/>
+                    </Sheet>
+                </CardFooter>
+            </div>
+
         </Card>
     )
 }
+
 
 export default AdminProductTile;

@@ -17,7 +17,8 @@ function ProductImageUpload(
         setUploadedImageUrl,
         setImageLoadingState,
         isEditMode,
-        isCustomStyling = false
+        isCustomStyling = false,
+        formData = null
     }) {
     const inputRef = useRef(null)
     
@@ -42,23 +43,24 @@ function ProductImageUpload(
             setImageFiles(newImageFile);
         }
     }
-
+    useEffect(()=> {
+        if(isEditMode){
+            setImageFiles(formData.images);
+        }
+    }, )
     return (
         <div className={`w-full mt-4 ${isCustomStyling ? '' : 'max-w-md mx-auto'}`}>
             <Label className="text-lg font-semibold md-2 block">Upload</Label>
             <div
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
-                className={`${isEditMode ? "opacity-60" : ""
-                    }
-                    border-2 border-dashed rounded-lg p-4`}
+                className={`border-2 border-dashed rounded-lg p-4`}
             >
                 <Input
                     id="image-upload"
                     type="file"
                     className="hidden"
                     onChange={handleImageFileChange}
-                    disabled={isEditMode}
                     multiple />
                 {
                     imageFiles?.length==0 ? (
@@ -73,11 +75,16 @@ function ProductImageUpload(
                             <Skeleton className='h-10 bg-gray-100' /> :
                             imageFiles?.map((item, index) => (
                                 <>
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between border border-1 rounded-md mt-1">
                                         <div className="flex items-center">
-                                            <FileIcon className="w-8 text-primary mr-2 h-8" />
+                                            {
+                                                isEditMode ? 
+                                                    <img className='w-10 h-10 object-cover rounded-s-md' src={item}/> :
+                                                    <FileIcon className="w-8 text-primary mr-2 h-8" />                                            }
                                         </div>
-                                        <p className="text-sm font-medium">{item.name}</p>
+                                        <div className='overflow-hidden w-full text-nowrap mr-2 ml-2'>
+                                            <p className="text-sm font-medium ">{item?.name || `image ${index + 1}`}</p>
+                                        </div>
                                         <Button
                                             variant="ghost"
                                             size="icon"

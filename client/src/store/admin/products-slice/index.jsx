@@ -46,10 +46,11 @@ export const uploadImagesToCloud = createAsyncThunk(
         }
     }
 )
+
+
 export const addNewProduct = createAsyncThunk(
     "/products/addNewProduct",
    async (formData) => {
-        console.log("from client form : ", formData);
         const result = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/products/add`, formData, {
             headers: {
                 'content-type': 'application/json'
@@ -86,7 +87,6 @@ export const deleteProduct = createAsyncThunk(
    async (id) => {
         const result = await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/products/delete/${id}`
         );
-        
         return result?.data;
     }
 )

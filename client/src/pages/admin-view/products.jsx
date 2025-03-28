@@ -3,23 +3,21 @@
 import ProductImageUpload from '@/components/admin-view/image-upload';
 import AdminProductTile from '@/components/admin-view/product-tile';
 import CommonForm from '@/components/common/form';
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
+import {Loader} from '@/components/ui/loader';
 import { SheetHeader } from '@/components/ui/sheet';
 import { Sheet } from '@/components/ui/sheet';
 import { SheetTitle } from '@/components/ui/sheet';
 import { SheetContent } from '@/components/ui/sheet';
 import { addProductFormElements } from '@/config';
-import { useToast } from '@/hooks/use-toast';
 import { addNewProduct, uploadImagesToCloud } from '@/store/admin/products-slice';
 import { deleteProduct } from '@/store/admin/products-slice';
 import { editProduct } from '@/store/admin/products-slice';
 import { fetchAllProducts } from '@/store/admin/products-slice';
-import { Item } from '@radix-ui/react-select';
-import { data } from 'autoprefixer';
-import { Hand } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
 
 const initialFormData = {
   title: '',
@@ -39,48 +37,57 @@ function AdminProducts() {
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const [currentEditedId, setCurrentEditedId] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const { productList } = useSelector(state => state.AdminProducts);
   const dispatch = useDispatch();
-  const { toast } = useToast()
 
-  function onSubmit(imageFiles) {
-    dispatch(uploadImagesToCloud(imageFiles)).then(
-      (res) =>{
-        if(res)
-        {
-          // const urls = res?.payload ? res.payload.map((item) => 
-          // item?.data?.secure_url) 
-          // : [];
-          const urls = res.payload;
-          return dispatch(addNewProduct(
-            {
-              images: urls,
-              ...formData
-            }))
+  function closing(message){
+    setIsLoading(false);
+    setOpenCreateProductsDialog(false);
+    toast(message);
+    setFormData(initialFormData);
+  }
+  function onSubmit(imageFiles, id="") {
+    setIsLoading(true);
+    if(currentEditedId !== null){
+      dispatch(editProduct({
+        id: currentEditedId,
+        formData: formData})).then((res) => {
+          closing("Product Updated")
+      })
+    }
+    else{
+      dispatch(uploadImagesToCloud(imageFiles)).then(
+        (res) =>{
+          if(res)
+          {
+            // const urls = res?.payload ? res.payload.map((item) => 
+            // item?.data?.secure_url) 
+            // : [];
+            const urls = res.payload;
+            return dispatch(addNewProduct(
+              {
+                images: urls,
+                ...formData
+              }))
+          }
         }
-      }
-    ).then((res) => {
-      console.log("Product created", res.payload);
-    }).catch((err) => {
-      console.error(err);
-    });
-    
-  }
-
-  function handleDelete(getCurrentProductId) {
-    dispatch(deleteProduct(getCurrentProductId)).then(data => {
-      if (data?.payload?.success) {
+      ).then((res) => {
+        closing("Product Created");
         dispatch(fetchAllProducts());
-      }
-    })
+      }).catch((err) => {
+        console.error(err);
+      });
+    }
+          
   }
+  
 
   function isFormValid() {
     const isValid = Object.keys(formData)
       .map((key) => formData[key] !== "")
       .every((item) => item);
-    console.log("The form is ", isValid);
     return isValid;
   }
 
@@ -88,10 +95,20 @@ function AdminProducts() {
     dispatch(fetchAllProducts())
   }, [dispatch])
 
+  useEffect(() => {
+    if(currentEditedId){
+      setImageFiles(formData?.imageFiles || [])
+    }
+  }, [formData])
   return (
     <Fragment>
+      <ToastContainer
+        pauseOnHover
+        autoClose={2000}
+        hideProgressBar={true}
+      />
       <div className="mb-5 w-full flex justify-end">
-        <Button onClick={() => setOpenCreateProductsDialog(true)}
+        <Button onClick={() => {setOpenCreateProductsDialog(true)}}
         >
           Add New Products
         </Button>
@@ -106,7 +123,6 @@ function AdminProducts() {
                 setCurrentEditedId={setCurrentEditedId}
                 product={productItem}
                 key={productItem._id}
-                handleDelete={handleDelete}
               />)) : null
         }
 
@@ -117,6 +133,7 @@ function AdminProducts() {
           setOpenCreateProductsDialog(false);
           setCurrentEditedId(null);  // to reset the input values
           setFormData(initialFormData);
+          setImageFiles([])
         }} >
         <SheetContent side="right" className="overflow-auto">
           <SheetHeader>
@@ -128,6 +145,7 @@ function AdminProducts() {
 
             </SheetTitle>
           </SheetHeader>
+          {isLoading && <Loader editText={currentEditedId ? "Editing Product..." : "Adding Product..."}/> }       
           <ProductImageUpload
             imageFiles={imageFiles}
             setImageFiles={setImageFiles}
@@ -136,6 +154,7 @@ function AdminProducts() {
             setImageLoadingState={setImageLoadingState}
             imageLoadingState={imageLoadingState}
             isEditMode={currentEditedId !== null}
+            formData={formData}
           />
           <div className="py-6">
             <CommonForm
@@ -153,4 +172,4 @@ function AdminProducts() {
   )
 }
 
-export default AdminProducts
+export default AdminProducts;
