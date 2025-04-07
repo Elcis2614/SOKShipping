@@ -4,9 +4,9 @@ import {imageUploadUtil, getSignature, destroyImages} from "../../helpers/cloudi
 import {insertProduct, query, updateProduct, deleteProductById} from '../../db/index.js';
 
 const getproductById = async (id, attributes=null) => {
-    const qText = `SELECT ${attributes ? "*" : attributes.join(',')} FROM products where _id = $1`;
-    const product = await query(qText, [id]);
-    return product;
+    const qText = `SELECT ${attributes?.length == 0 ? "*" : attributes.join(',')} FROM products where _id = $1`;
+    const images = await query(qText, [id]);
+    return images;
 }
 
 const handleImageUpload = async(req, res) => {
@@ -126,7 +126,7 @@ const editProduct = async(req, res) => {
         const deleteImages = await destroyImages(imagesToDelete);
         return res.status(200).json({
             success : true,
-            data: result,
+            data: {...result, ...deleteImages},
         })
         
     } catch (error) {
@@ -143,17 +143,16 @@ const editProduct = async(req, res) => {
 const deleteProduct = async (req, res) => {
     try {
         const {id} = req.params
-        const response = await getproductById(id, ['images']);
-        console.log("The images ", response);
-        if(!response) 
+        const images = await getproductById(id, ['images']).then(res => res[0]?.images);
+        if(!images) 
             return res.status(404).json({
                 success : false,
                 message : "Product not found",
             })
+        const imaDeleter = await destroyImages(images);
         await deleteProductById(id).then((res) => {
             console.log("Deleted product", id);
         });
-        //TODO: delete the images from cloudinary
         return res.status(200).json({
             success : true,
             message : "Product deleted successfully"

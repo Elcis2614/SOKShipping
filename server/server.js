@@ -36,27 +36,6 @@ for (const envVar of requiredEnvVars) {
 }
 //#endregion*/
 
-// create a database connection -> u can also create a separate file for this and then  import  use that file here
-// MongoDB connection with retry logic
-// const connectDB = async (retryCount = 5) => {
-//     try {
-//         console.log('Attempting to connect to MongoDB...');
-//         const conn = await mongoose.connect(process.env.MONGODB_URI, {
-//             useNewUrlParser: true,
-//             useUnifiedTopology: true,
-//         });
-//         console.log(`MongoDB Connected: ${conn.connection.host}`);
-//     } catch (error) {
-//         console.error(`Error connecting to MongoDB: ${error.message}`);
-//         if (retryCount > 0) {
-//             console.log(`Retrying connection... (${retryCount} attempts remaining)`);
-//             setTimeout(() => connectDB(retryCount - 1), 5000);
-//         } else {
-//             console.error('Failed to connect to MongoDB after multiple attempts');
-//             process.exit(1);
-//         }
-//     }
-// };
 
 const app = express();
 const PORT = process.env.PORT || 5001;

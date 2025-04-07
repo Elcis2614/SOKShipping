@@ -1,14 +1,17 @@
 // server/helpers/cloudinary.js 
 
 import cloudinary from 'cloudinary';
-
+import 'dotenv/config';
 import multer from 'multer';
 
-// cloudinary.config({   // save the keys in .env 
-//     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,  
-//     api_key: process.env.CLOUDINARY_API_KEY, 
-//     api_secret: process.env.CLOUDINARY_API_SECRET    // Click 'View API Keys' above to copy your API secret
-//     });
+
+
+const options = {
+    'cloud_name': process.env.CLOUDINARY_CLOUD_NAME,  
+    'api_key': process.env.CLOUDINARY_API_KEY, 
+    'api_secret': process.env.CLOUDINARY_API_SECRET
+}
+cloudinary.config(options);
     
     
 const storage = new multer.memoryStorage();
@@ -32,7 +35,17 @@ export async function getSignature(){
 }
 
 export async function destroyImages(images){
-    return;
+    const ids = images.map((item) => {
+        const public_id = item.split("/").at(-1)?.split('.')[0];
+        console.log(public_id);
+        return public_id;
+    })
+    const response = await cloudinary.v2.api.delete_resources(ids).then((res) => res);
+    const undeleted = Object.keys(response?.deleted)?.filter((item) => response.deleted[item] !== 'deleted');
+    if (undeleted?.length > 0){
+        console.error("Couldn't deleted some images ", undeleted);
+    }
+    return response;
 }
 
 export const upload = multer({storage});

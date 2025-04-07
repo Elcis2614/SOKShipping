@@ -51,6 +51,7 @@ export const registerUser = async(req, res) => {
 // login
 export const loginUser = async(req, res) => {
     const { email, password } = req.body;
+    console.log("Received request for ", email, password)
     try { 
         //const checkUser = await fetch().then((res) => res.json());
         const checkUser = await db.query('SELECT * FROM users WHERE email = $1 AND password = $2', [email, password]);
