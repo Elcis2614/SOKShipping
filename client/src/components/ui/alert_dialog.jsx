@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button } from './button';
+import { Loader } from 'lucide-react';
 import { 
     AlertDialogContent,
     Sheet,
@@ -9,7 +10,7 @@ import {
     SheetTrigger,
     SheetClose } from './sheet'
 
-const AlertDialog = ({ title, handleCLick }) => {
+const AlertDialog = ({ title, handleCLick, isLoading=false}) => {
     return (
         <SheetPortal>
             <SheetOverlay />
@@ -23,14 +24,20 @@ const AlertDialog = ({ title, handleCLick }) => {
                         Do you still want to delete ?
                     </div>
                     <div className='flex justify-between gap-3'>
-                        <SheetClose>
+                        <SheetClose disabled={isLoading}>
                             <Button
                                 variant="ghost"
-                                size="sm"
+                                size="dialog"
+                                disabled={isLoading}
                             >Cancel</Button>
                         </SheetClose>
-                        <Button variant="destructive" onClick={handleCLick}>
-                            Delete
+                        <Button disabled={isLoading} variant="destructive" onClick={handleCLick} size="dialog">
+                                <div>
+                                    {isLoading ?
+                                        <Loader className='animate-spin' color="white"/> :
+                                        "Delete"
+                                    }   
+                                </div>
                         </Button>
                     </div>
                 </div>

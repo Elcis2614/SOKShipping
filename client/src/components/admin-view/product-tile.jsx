@@ -22,18 +22,20 @@ function AdminProductTile({
 }) {
     const dispatch = useDispatch();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    function handleDelete(productId) {
+    async function handleDelete(productId) {
+    setIsLoading(true);
     if(productId){
-        dispatch(deleteProduct(productId)).then(data => {
+        await dispatch(deleteProduct(productId)).then(data => {
         if (data?.payload?.success) {
             toast("Product Deleted");
             setIsDialogOpen(false);
             dispatch(fetchAllProducts());
         }
         });
-
     }
+    setIsLoading(false);
     }
 
     return (
@@ -73,18 +75,22 @@ function AdminProductTile({
                 </CardContent>
 
                 <CardFooter className="flex justify-between items-center">
-                    <Button onClick={() => {
+                    <Button disabled={isLoading} onClick={() => {
                         setOpenCreateProductsDialog(true)
                         setCurrentEditedId(product?._id)
                         setFormData(product);
                     }}>Edit</Button>
-                    <Sheet open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <Sheet open={isDialogOpen} onOpenChange={setIsDialogOpen}   >
                         <SheetTrigger>
-                            <Button>
+                            <Button disabled={isLoading}>
                                 Delete
                             </Button>
                         </SheetTrigger>
-                        <AlertDialog title={"Delete Product"} handleCLick={() => {handleDelete(product?._id)}}/>
+                        <AlertDialog 
+                            title={"Delete Product"}
+                            handleCLick={() => {handleDelete(product?._id)}}
+                            isLoading={isLoading}
+                        />
                     </Sheet>
                 </CardFooter>
             </div>
