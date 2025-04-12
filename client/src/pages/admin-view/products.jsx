@@ -45,6 +45,7 @@ function AdminProducts() {
     setOpenCreateProductsDialog(false);
     toast(message);
     setFormData(initialFormData);
+    setImageFiles([]);
   }
   function onSubmit(imageFiles, id="") {
     setIsLoading(true);

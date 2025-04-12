@@ -17,10 +17,11 @@ import { addReview, getReviews } from "@/store/shop/review-slice";
 import { useToast } from "@/hooks/use-toast";
 
 import PropTypes from 'prop-types';
+import ImagesView from '@/components/shopping-view/product-images';
 
 function ProductDetails() {
   const [productDetails, setProductDetails] = useState({});
-  const [profile, setProfile] = useState();
+  const [imageFiles, setimageFiles] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [reviewMsg, setReviewMsg] = useState("");
   const [rating, setRating] = useState(0);       
@@ -55,9 +56,9 @@ function ProductDetails() {
     const pId = searchParams.get("id");
     dispatch(fetchProductDetails(pId)).then((res) => {
       setProductDetails(res.payload.data[0]);
-      setProfile(res.payload.data[0].images[0]);
     });
   }, [])
+
   
   useEffect(()=>{
     const newStock = calculateRemainingStock();
@@ -135,6 +136,12 @@ function ProductDetails() {
     if (productDetails?._id) {
       dispatch(getReviews(productDetails._id));
     }
+    try{
+      const files = Object.keys(productDetails.images).map(key => productDetails.images[key]);
+      setimageFiles(files);
+    } catch(err){
+        console.error("Could not load images for this product,",  err)
+    }
   }, [productDetails, dispatch]);
 
   const averageReview = reviews && reviews.length > 0 ? 
@@ -144,18 +151,10 @@ function ProductDetails() {
   const canSubmitReview = rating > 0 && reviewMsg.trim().length > 0;
   
   return (
-    <div className="grid grid-cols-2 gap-8 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw]">
-    <div className="relative overflow-hidden rounded-lg">
-      <img
-        src={profile|| "https://via.placeholder.com/600x600?text=No+Image"}
-        alt={productDetails?.title || "Product Image"}
-        width={600}
-        height={600}
-        className="aspect-square w-full object-cover"
-      />
-    </div>
+    <div className="lg:flex gap-6 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw] ">
+    <ImagesView images={imageFiles} title={productDetails?.title}/>
     
-    <div className="">
+    <div className="lg:w-1/2">
        {/* Product details section */}
         <div>
           <h1 className="text-3xl font-extrabold">
@@ -181,7 +180,7 @@ function ProductDetails() {
           )}
         </div>
         
-        <div className="flex items-center gap-2 mt-2">
+        <div className="flex items-center gap-2 mt-2 ">
           <div className="flex items-center gap-0.5">
             <StarRatingComponent rating={averageReview} />
            </div>
