@@ -35,17 +35,21 @@ export async function getSignature(){
 }
 
 export async function destroyImages(images){
-    const ids = images.map((item) => {
-        const public_id = item.split("/").at(-1)?.split('.')[0];
-        console.log(public_id);
-        return public_id;
-    })
-    const response = await cloudinary.v2.api.delete_resources(ids).then((res) => res);
-    const undeleted = Object.keys(response?.deleted)?.filter((item) => response.deleted[item] !== 'deleted');
-    if (undeleted?.length > 0){
-        console.error("Couldn't deleted some images ", undeleted);
+    try{
+        const ids = images.map((item) => {
+            const public_id = item.split("/").at(-1)?.split('.')[0];
+            console.log(public_id);
+            return public_id;
+        })
+        const response = await cloudinary.v2.api.delete_resources(ids).then((res) => res);
+        const undeleted = Object.keys(response?.deleted)?.filter((item) => response.deleted[item] !== 'deleted');
+        if (undeleted?.length > 0){
+            console.error("Couldn't deleted some images ", undeleted);
+        }
+        return response;
+    } catch(err){
+        console.error("Error while deleting images : " , "\t", images, "\n", err);
     }
-    return response;
 }
 
 export const upload = multer({storage});
