@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 function AdminDashboard() {
-    const [imageFile, setImageFile] = useState(null);
+    const [imageFile, setImageFile] = useState([]);
     const [uploadedImageUrl, setUploadedImageUrl] = useState('');
     const [imageLoadingState, setImageLoadingState] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
@@ -19,9 +19,12 @@ function AdminDashboard() {
     const { toast } = useToast();
     const { isLoading, error, featureImageList } = useSelector((state) => state.commonFeature);
 
-    // useEffect(() => {
-    //     dispatch(getFeatureImages());
-    // }, [dispatch]);
+    useEffect(() => {
+        dispatch(getFeatureImages());
+    }, [dispatch]);
+    useEffect(() => {
+        console.log("features we got: ", featureImageList);
+    }, [featureImageList])
 
     async function handleUploadFeatureImage() {
         if (!uploadedImageUrl) {
@@ -84,18 +87,20 @@ function AdminDashboard() {
             <Card className="mb-8">
                 <CardContent className="pt-6">
                     <ProductImageUpload
-                        imageFile={imageFile}
-                        setImageFile={setImageFile}
+                        imageFiles={imageFile}
+                        setImageFiles={setImageFile}
                         uploadedImageUrl={uploadedImageUrl}
                         setUploadedImageUrl={setUploadedImageUrl}
                         setImageLoadingState={setImageLoadingState}
                         imageLoadingState={imageLoadingState}
                         isCustomStyling={true}
+                        isEditMode={false}
+                        isMultiple={false}
                     />
                     <Button
                         onClick={handleUploadFeatureImage}
                         className="w-full mt-4"
-                        disabled={isLoading || !uploadedImageUrl}
+                        disabled={isLoading || imageFile.length==0}
                     >
                         {isLoading ? (
                             <>

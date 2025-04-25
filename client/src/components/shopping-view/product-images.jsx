@@ -20,8 +20,8 @@ const ImagesView = ({images, title})=>{
             <div className="flex flex-col hidden lg:block">
                 {
                     images?.map((image, index) => (
-                        <div className={`w-24 rounded-lg mx-auto cursor-pointer border-4 border-transparent 
-                                        ${image == focusedImage ? "border-blue-500" : ""}`}
+                        <div className={`w-24 rounded-lg mx-auto cursor-pointer border-4 
+                                        ${image == focusedImage ? "border-blue-600" : " border-transparent"}`}
                              onClick={() => {handleClick(index)}}>
                             <img
                                 className="w-full aspect-square rounded-sm object-cover" 

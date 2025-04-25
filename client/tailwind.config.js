@@ -4,7 +4,7 @@ export default {
     content: [
 		'./index.html', // Include your index.html file
 		'./src/**/*.{js,jsx,ts,tsx}', // Include all JS/JSX/TS/TSX files in the src directory
-	  ],
+	],
   theme: {
   	extend: {
   		borderRadius: {
@@ -17,7 +17,9 @@ export default {
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
+  				foreground: 'hsl(var(--card-foreground))',
+				container: 'var(--container-foreground)',
+				highlight: 'var(--highlight)'
   			},
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',
@@ -25,7 +27,8 @@ export default {
   			},
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+  				foreground: 'hsl(var(--primary-foreground))',
+				highlight: 'var(--highlight)'
   			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
