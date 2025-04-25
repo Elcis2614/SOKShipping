@@ -1,5 +1,5 @@
 import Feature from '../../models/Feature.js'
-
+import {getFeatureImages as getFeatures}  from '../../db/index.js'
 const addFeatureImage = async(req, res) => {
     try {
         const { image } = req.body;
@@ -35,15 +35,15 @@ const addFeatureImage = async(req, res) => {
 
 const getFeatureImages = async (req, res) => {
     try {
-        const features = await Feature.find().sort({ createdAt: -1 });
+        const features = await getFeatures();
         
         res.status(200).json({
             success: true,
             data: features
         });
-        
+
     } catch (error) {
-        //console.error('Error in getting Feature:', error);
+        console.error('Error in getting Feature:', error);
         res.status(500).json({
             success : false,
             message: 'An error occurred!',

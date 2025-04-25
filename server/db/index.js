@@ -34,3 +34,9 @@ export const deleteProductById = async(id) => {
     const result = await query(queryTxt, [id]);
     return result;
 }
+
+export const getFeatureImages = async()=>{
+    const queryTxt = 'SELECT * FROM features';
+    const result = await query(queryTxt);
+    return result;
+}
