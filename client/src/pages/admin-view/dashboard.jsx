@@ -1,19 +1,16 @@
 // client/src/pages/admin-view/dashboard.jsx 
 
 import { useEffect } from 'react';
-import ProductImageUpload from '@/components/admin-view/image-upload';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { addFeatureImage, getFeatureImages, deleteFeatureImage } from '@/store/common-slice';
+import { getFeatureImages, deleteFeatureImage } from '@/store/common-slice';
 import { Loader2, Trash2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { FeatureForm } from '@/components/admin-view/feature-form';
 
 function AdminDashboard() {
-    const [imageFile, setImageFile] = useState([]);
-    const [uploadedImageUrl, setUploadedImageUrl] = useState('');
-    const [imageLoadingState, setImageLoadingState] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
     const dispatch = useDispatch();
     const { toast } = useToast();
@@ -25,36 +22,6 @@ function AdminDashboard() {
     useEffect(() => {
         console.log("features we got: ", featureImageList);
     }, [featureImageList])
-
-    async function handleUploadFeatureImage() {
-        if (!uploadedImageUrl) {
-            toast({
-                title: "Please upload an image first",
-                variant: "destructive",
-            });
-            return;
-        }
-
-        try {
-            const resultAction = await dispatch(addFeatureImage(uploadedImageUrl));
-            if (addFeatureImage.fulfilled.match(resultAction)) {
-                dispatch(getFeatureImages());
-                toast({
-                    title: "Image uploaded successfully",
-                });
-                setImageFile(null);
-                setUploadedImageUrl('');
-            } else {
-                throw new Error(resultAction.error.message);
-            }
-        } catch (error) {
-            toast({
-                title: "Failed to upload image",
-                description: error.message,
-                variant: "destructive",
-            });
-        }
-    }
 
     async function handleDeleteImage(imageId) {
         try {
@@ -84,35 +51,7 @@ function AdminDashboard() {
             <h1 className="text-2xl font-bold mb-6">Feature Images Management</h1>
             
             {/* Upload Section */}
-            <Card className="mb-8">
-                <CardContent className="pt-6">
-                    <ProductImageUpload
-                        imageFiles={imageFile}
-                        setImageFiles={setImageFile}
-                        uploadedImageUrl={uploadedImageUrl}
-                        setUploadedImageUrl={setUploadedImageUrl}
-                        setImageLoadingState={setImageLoadingState}
-                        imageLoadingState={imageLoadingState}
-                        isCustomStyling={true}
-                        isEditMode={false}
-                        isMultiple={false}
-                    />
-                    <Button
-                        onClick={handleUploadFeatureImage}
-                        className="w-full mt-4"
-                        disabled={isLoading || imageFile.length==0}
-                    >
-                        {isLoading ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Uploading...
-                            </>
-                        ) : (
-                            'Upload Feature Image'
-                        )}
-                    </Button>
-                </CardContent>
-            </Card>
+            <FeatureForm/>
 
             {/* Feature Images Grid */}
             <div className="space-y-4">
