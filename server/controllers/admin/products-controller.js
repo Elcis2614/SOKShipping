@@ -1,5 +1,4 @@
 // server/controllers/admin/products-controller.js
-import mongoose from 'mongoose';
 import {imageUploadUtil, getSignature, destroyImages} from "../../helpers/cloudinary.js";
 import {insertProduct, query, updateProduct, deleteProductById} from '../../db/index.js';
 

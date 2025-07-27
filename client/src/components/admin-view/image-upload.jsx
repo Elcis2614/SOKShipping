@@ -18,7 +18,8 @@ function ProductImageUpload(
         setImageLoadingState,
         isEditMode,
         isCustomStyling = false,
-        formData = null
+        formData = null,
+        isMultiple=true
     }) {
     const inputRef = useRef(null)
     
@@ -61,9 +62,9 @@ function ProductImageUpload(
                     type="file"
                     className="hidden"
                     onChange={handleImageFileChange}
-                    multiple />
+                    multiple={isMultiple}/>
                 {
-                    imageFiles?.length==0 ? (
+                    imageFiles?.length ==0 ? (
                         <Label
                             htmlFor="image-upload"
                             className={`${isEditMode ? 'cursor-not-allowed' : ""} flex flex-col items-center justify-center h-32 cursor-pointer`} >

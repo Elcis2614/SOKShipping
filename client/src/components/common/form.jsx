@@ -12,7 +12,7 @@ import {
     SelectValue,} from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
-function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText, isBtnDisabled }) {
+function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText="Add", isBtnDisabled }) {
 
     useEffect(() => {
         Object.keys(formData).every((item) => {

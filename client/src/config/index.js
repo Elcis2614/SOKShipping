@@ -98,7 +98,22 @@ export const addProductFormElements = [
       placeholder: "Enter total stock",
     },
   ];
-  
+export const addFeatureFormElements = [
+  {
+    label: "Feature title",
+    name: "title",
+    componentType: "input",
+    type: "text",
+    placeholder: "Enter feature title",
+  },
+  {
+    label: "Feature subTitle",
+    name: "subTitle",
+    componentType: "input",
+    type: "text",
+    placeholder: "Enter feature subtitle",
+  },
+];
 export const shoppingViewHeaderMenuItems = [
   {
     id : 'home',
