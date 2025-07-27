@@ -3,22 +3,22 @@
 export const registerFormControls = [
    { 
    name : 'userName',
-    label : 'User Name',
-    placeholder: 'Enter your user name',
+    label : 'Your name',
+    placeholder: 'First and last name',
     componentType : 'input',
     type : 'text',
     },
    { 
    name : 'email',
     label : 'Email',
-    placeholder: 'Enter your user email',
+    placeholder: 'example@gmail.com',
     componentType : 'input',
     type : 'email',
     },
    { 
    name : 'password',
     label : 'Password',
-    placeholder: 'Enter your user password',
+    placeholder: 'At least 6 characters',
     componentType : 'input',
     type : 'password',
     },

@@ -97,9 +97,6 @@ function HeaderRightContent(){
                     className="relative flex border-none hover:bg-transparent"
                     disabled={isLoading}
                 >
-                    {isLoading ? (
-                        <Loader2Icon className="h-4 w-4 animate-spin" />
-                    ) : (
                         <div className='flex'>
                             <ShoppingCart className="h-6 w-6 mr-1 items-center"/>
                             <div className='whitespace-nowrap underline font-semibold text-[16px] hidden md:block'>Cart</div>
@@ -109,7 +106,6 @@ function HeaderRightContent(){
                                 </span>
                             )}
                         </div>
-                    )}
                     <span className="sr-only">User Cart</span>
                 </Button>
                 {/* Pass cartItems to the cart wrapper */}

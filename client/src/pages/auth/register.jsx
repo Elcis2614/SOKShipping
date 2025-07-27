@@ -20,9 +20,13 @@ function AuthRegister() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const {toast} = useToast();
-    const [isFilled, setIsFilled] = useState(false);
+    const [isFilled, setIsFilled] = useState(true);
     
-
+    function isfilled(){
+        const {userName, email, password} = formData;
+        setIsFilled(userName !== '' && email!== '' && password!== '');
+        console.log("here", userName, email, password);
+    }
     function onSubmit(event) {
         event.preventDefault();
         dispatch(registerUser(formData)).then((data) => {
@@ -39,8 +43,7 @@ function AuthRegister() {
             }
         });
     }
-
-    console.log(formData);
+    
     
     return (
         <div className="mx-auto w-full max-w-wmd space-y-6">
@@ -60,7 +63,7 @@ function AuthRegister() {
                 formData={formData}
                 setFormData={setFormData}
                 onSubmit={onSubmit}
-                isBtnDisabled={!isFilled}
+                isBtnDisabled={false}
             />
         </div>
     )

@@ -15,13 +15,12 @@ const isTokenExpired = (exp) => {
     return false //exp < currentTime;  // Compare JWT expiration to current time
 }
 
-export const registerUser = createAsyncThunk('/auth/register', 
+export const   registerUser = createAsyncThunk('/auth/register', 
     async(formData) => {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, formData, {
             withCredentials : true 
         } );
         return response.data;
-    
     }
 )
 
