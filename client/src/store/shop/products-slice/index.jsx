@@ -24,6 +24,7 @@ export const fetchAllFilteredProducts = createAsyncThunk(
             //const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/shop/products/get?${query}`);
             const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/shop/products/get?${query}`)
             // Return the data in the correct format
+    
             return result.data; 
         } catch (error) {
             console.error('Error fetching products:', error);

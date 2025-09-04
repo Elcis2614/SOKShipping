@@ -2,139 +2,113 @@
 
 import UserCartItemsContent from '@/components/shopping-view/cart-items-content'
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import img from '../../assets/account.jpg'
+import { useSelector } from 'react-redux'
 import Address from '@/components/shopping-view/address'
-import { Button } from '@/components/ui/button'
-import { createNewOrder } from '@/store/shop/order-slice'
-import { toast } from '@/hooks/use-toast'
+import OrderCheckOutCard from '@/components/shopping-view/order-checkout-card'
+import { ShoppingCart, CreditCard, MapPin, Package, CheckCircle } from 'lucide-react'
 
 function ShoppingCheckout() {
-    const { cartItems, _id: cartId } = useSelector((state) => state.shopCart);  // Retrieve cartId directly from the state
-    const { user } = useSelector((state) => state.auth);
-    const { approvalURL } = useSelector((state) => state.shopOrder)   // Paypal approvalURL
+    const { cartItems, _id: cartId } = useSelector((state) => state.shopCart);
+    const { approvalURL } = useSelector((state) => state.shopOrder)
     const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null)
-    const [isPaymentStart, setIsPaymentStart] = useState(false)
-    const dispatch = useDispatch()
-
-    console.log(currentSelectedAddress, 'cart current SelectedAddress checkout');
-
-    // Calculate total price with a valid fallback for an empty cart
-    const totalPrice = cartItems && cartItems.length > 0
-        ? cartItems.reduce((sum, item) => sum + (
-            item?.salePrice > 0
-                ? item?.salePrice
-                : item?.price
-        ) * item.quantity, 0)
-        : 0;
-
-
-    function handleInitiatePaypalPayment() {
-        if (currentSelectedAddress === null) {
-            toast({
-                title: "Please Select one address to proceed.",
-                variant: 'destructive',
-            })
-            return;
-        }
-        if (cartItems.length === 0) {
-            toast({
-                title: 'Your cart is empty. Please select items',
-                variant: 'destructive',
-            })
-        }
-
-        const orderData = {
-            userId: user?.id,
-            cartId: cartId,
-            cartItems: cartItems.map((singleCartItem) => ({
-                productId: singleCartItem?.productId,
-                title: singleCartItem?.title,
-                image: singleCartItem?.image,
-                price: singleCartItem?.salePrice > 0 ? singleCartItem?.salePrice : singleCartItem?.price,
-                salePrice: singleCartItem?.salePrice,
-                quantity: singleCartItem?.quantity,
-            })),
-            addressInfo: {
-                addressId: currentSelectedAddress?._id,
-                address: currentSelectedAddress?.address,
-                city: currentSelectedAddress?.city,
-                pincode: currentSelectedAddress?.pincode,
-                phone: currentSelectedAddress?.phone,
-                notes: currentSelectedAddress?.notes
-            },
-            orderStatus: 'pending',
-            paymentMethod: 'paypal',
-            paymentStatus: 'pending',
-            totalAmount: totalPrice,
-            orderDate: new Date(),
-            orderUpdateDate: new Date(),
-            paymentId: '',
-            payerId: '',
-
-
-        }
-        // console.log(orderData, ': Order Data' );
-        console.log("AddressInfo being sent:", orderData.addressInfo);
-
-        dispatch(createNewOrder(orderData)).then((data) => {
-            console.log("Sending order data:", orderData);
-
-            if (data?.payload?.success) {
-                console.log("Response from createNewOrder:", data);
-                setIsPaymentStart(true)
-            } else {
-                setIsPaymentStart(false)
-            }
-        })
-    }
 
     if (approvalURL) {
         window.location.href = approvalURL;
     }
 
-    // console.log("CartId before creating order:", cartId);
-
     return (
-        <div className='flex flex-col'>
-            {/* Hero Image */}
-            <div className='col-span-full pt-9'>
-                <p className='text-2xl font-bold'>Order Confirmation & follow up</p>
+        <div className='min-h-screen bg-gray-50'>
+            {/* Header */}
+            <div className='bg-white shadow-sm border-b'>
+                <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+                    <div className='flex items-center gap-3'>
+                        <ShoppingCart className='h-8 w-8 text-blue-600' />
+                        <div>
+                            <h1 className='text-3xl font-bold text-gray-900'>Checkout</h1>
+                            <p className='text-gray-600 mt-1'>Review your order and complete your purchase</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5 p-5'>
-                <div>
-                    <Address selectedId={currentSelectedAddress} setCurrentSelectedAddress={setCurrentSelectedAddress} />
+
+            {/* Progress Steps */}
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+                <div className='flex items-center justify-center space-x-8 mb-8'>
+                    <div className='flex items-center space-x-2'>
+                        <div className='w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center'>
+                            <CheckCircle className='h-5 w-5 text-white' />
+                        </div>
+                        <span className='text-sm font-medium text-blue-600'>Cart</span>
+                    </div>
+                    <div className='w-16 h-0.5 bg-blue-600'></div>
+                    <div className='flex items-center space-x-2'>
+                        <div className='w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center'>
+                            <MapPin className='h-5 w-5 text-white' />
+                        </div>
+                        <span className='text-sm font-medium text-blue-600'>Address</span>
+                    </div>
+                    <div className='w-16 h-0.5 bg-gray-300'></div>
+                    <div className='flex items-center space-x-2'>
+                        <div className='w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center'>
+                            <CreditCard className='h-5 w-5 text-gray-500' />
+                        </div>
+                        <span className='text-sm font-medium text-gray-500'>Payment</span>
+                    </div>
                 </div>
 
-                {/* Cart Items */}
-                <div className='flex flex-col gap-4'>
-                    {
-                        cartItems && cartItems.length > 0 ?
-                            cartItems.map((item) => (
-                                <UserCartItemsContent key={item.productId} cartItem={item} />
-                            ))
-                            : (
-                                <p> Your cart is empty </p>
-                            )
-                    }
-
-                    {cartItems.length > 0 && (
-                        <div className="mt-8 space-y-4">
-                            <div className="flex justify-between">
-                                <span className="font-bold">Total</span>
-                                <span className="font-bold">${totalPrice.toFixed(2)}</span>
+                {/* Main Content */}
+                <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+                    {/* Left Column - Address & Items */}
+                    <div className='lg:col-span-2 space-y-6'>
+                        {/* Address Section */}
+                        <div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
+                            <div className='px-6 py-4 border-b border-gray-200 bg-gray-50'>
+                                <div className='flex items-center gap-3'>
+                                    <MapPin className='h-5 w-5 text-gray-600' />
+                                    <h2 className='text-lg font-semibold text-gray-900'>Delivery Address</h2>
+                                </div>
+                            </div>
+                            <div className='p-6'>
+                                <Address 
+                                    selectedId={currentSelectedAddress} 
+                                    setCurrentSelectedAddress={setCurrentSelectedAddress} 
+                                />
                             </div>
                         </div>
-                    )}
-                    <div className='mt-4 w-full'>
-                        <Button
-                            onClick={handleInitiatePaypalPayment}
-                            className='w-full'
-                        >
-                            {
-                                isPaymentStart ? 'Processing Paypal Payment...' : 'Confirm order'
-                            }
-                        </Button>
+
+                        {/* Cart Items Section */}
+                        <div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
+                            <div className='px-6 py-4 border-b border-gray-200 bg-gray-50'>
+                                <div className='flex items-center justify-between'>
+                                    <div className='flex items-center gap-3'>
+                                        <Package className='h-5 w-5 text-gray-600' />
+                                        <h2 className='text-lg font-semibold text-gray-900'>Order Items</h2>
+                                    </div>
+                                    <span className='text-sm text-gray-500'>
+                                        {cartItems?.length || 0} item{cartItems?.length !== 1 ? 's' : ''}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className='divide-y divide-gray-100'>
+                                {cartItems && cartItems.length > 0 ? (
+                                    cartItems.map((item, index) => (
+                                        <div key={item.productId} className='p-6'>
+                                            <UserCartItemsContent cartItem={item} />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className='p-12 text-center'>
+                                        <ShoppingCart className='h-16 w-16 text-gray-300 mx-auto mb-4' />
+                                        <h3 className='text-lg font-medium text-gray-900 mb-2'>Your cart is empty</h3>
+                                        <p className='text-gray-500'>Add some items to your cart to continue</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <OrderCheckOutCard currentSelectedAddress/>
                     </div>
                 </div>
             </div>
