@@ -12,7 +12,6 @@ const router = express.Router();
 
 router.post('/create', async (req, res, next) => {
     try {
-        // console.log('Received create order request');
         await createOrder(req, res);
     } catch (error) {
         next(error);

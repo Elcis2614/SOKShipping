@@ -1,65 +1,28 @@
 // server/controllers/shop/cart-controller.js
 import Cart from '../../models/Cart.js';
-import Product from '../../models/Product.js';
-
+import { cartService } from '../../db/cart-manager.js';
 const addToCart = async(req, res) => {
-
     try {
         const { userId, productId, quantity } = req.body;
-        
         if (!userId || !productId || quantity <= 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid data provided!',
             });
         }
-          const product = await Product.findById(productId);
-          
-          if(!product){
-            return res.status(404).json({
-                success : false,
-                message : 'Product not found!'
-            })
+          const cart_id = await cartService.getUserCart(userId);
+          if(!cart_id){
+            throw new Error('Could not create cart_id');
           }
-          
-          let cart = await Cart.findOne({ userId });
-          
-          if(!cart){
-            cart = new Cart({ userId, items: [] });
-          }
-          
-          const findCurrentProductIndex  = cart.items.findIndex(
-            (item) => item.productId.toString() === productId
-            );
-          
-          if(findCurrentProductIndex === -1 ){
-            cart.items.push({ productId, quantity });
-          } else {
-            cart.items[ findCurrentProductIndex ].quantity += quantity;
-          }
-          
-          await cart.save(); 
-          
-          // Populate the cart items with product details
-            await cart.populate('items.productId');
-    
-            const populatedItems = cart.items.map(item => ({
-                productId: item.productId._id,
-                title: item.productId.title,
-                price: item.productId.price,
-                quantity: item.quantity
-            }));
-
+          else{
+            const cart = await cartService.addToCart(cart_id, productId, quantity);
             res.status(200).json({
                 success: true,
-                data: {
-                    ...cart.toObject(),
-                    items: populatedItems
-                },
+                data: cart_id,
             });
-              
+          }  
         } catch (error) {
-            //console.log("Error adding to cart:", error);
+            console.log("Error adding to cart:\n", error);
             res.status(500).json({
                 success: false,
                 message: 'Error adding item to cart',
@@ -78,38 +41,18 @@ const fetchCartItems = async (req, res) => {
             });
         }
 
-        let cart = await Cart.findOne({ userId }).populate({
-            path: 'items.productId',
-            select: "image title price salePrice"
-        });
-        
-        if (!cart) {
-            // If cart doesn't exist, create an empty one
-            cart = new Cart({ userId, items: [] });
-            await cart.save();
-        }
-        
-        const validItems = cart.items.filter(productItem => productItem.productId);
-        
-        const populatedCartItems = validItems.map((item) => ({
-            productId: item.productId._id,
-            image: item.productId.image,
-            title: item.productId.title,
-            price: item.productId.price,
-            salePrice: item.productId.salePrice,
-            quantity: item.quantity
-        }));
-        
+        const user_cart_id = await cartService.getUserCart(userId);
+        const cart_details = await cartService.getCartDetails(user_cart_id);
         res.status(200).json({
             success: true,
             data: {
-                ...cart.toObject(),
-                items: populatedCartItems
+                cart_id: user_cart_id,
+                cart_items: cart_details || []
             }
         });
         
     } catch (error) {
-        //console.error("Error fetching cart items:", error);
+        console.error("Error fetching cart items:", error);
         res.status(500).json({
             success: false,
             message: 'Error fetching cart items',

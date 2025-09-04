@@ -1,13 +1,11 @@
 // server/controllers/shop/products-controller.js 
 
 //const Product = require("../../models/Product");
-import { query } from 'express';
-import * as db from '../../db/index.js';
+import { productService } from '../../db/product-manager.js';
 
 export const getFilteredProducts = async (req, res) => {
     try {
         const { category = [], brand = [], sortBy = "price-lowtohigh" } = req.query;
-        
         let filters = {};
         
         // Building filters
@@ -39,8 +37,7 @@ export const getFilteredProducts = async (req, res) => {
         }
         
         // Fetching products with filters and sorting
-        const qText = 'SELECT * from products limit 25';
-        const products = await db.query(qText);
+        const products = await productService.getProducts();
         res.status(200).json({
             success: true,
             data: products,
@@ -60,8 +57,7 @@ export const getProductDetails = async (req, res) => {
         const { id } = req.params;
         console.log("Fetching for id : ", id);
         //const product = await Product.findById(id);
-        const qText = 'SELECT * FROM products where _id = $1';
-        const product = await db.query(qText, [id]);
+        const product = await productService.getProductById(id);
         if (!product)  
             return res.status(404).json({
                 success: false,

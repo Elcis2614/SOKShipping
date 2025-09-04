@@ -54,7 +54,6 @@ export const loginUser = async(req, res) => {
                 message: "Wrong Credentials"
             });
         }
-        console.log("Found ", mUser);
         const isRealPassWord = await bcrypt.compare(password, mUser[0].password);
         // const checkPasswordMatch = true;
         // if (!checkPasswordMatch) {
@@ -71,21 +70,14 @@ export const loginUser = async(req, res) => {
             userName: mUser[0]?.fname,
         };
         console.log("Connected user : ", user);
-        console.log("Connected user : ", mUser);
         const token = jwt.sign(user, 'CLIENT_SECRET_KEY', { expiresIn: '120m' });
         
         res.cookie('token', token, getCookieOptions()).json({
             success: true,
             message: 'Logged in successfully',
-            user: {...user}
-        });
-        res.status(200).json({
-            success: true,
-            message: 'Logged in successfully',
             user: {...user},
             token: token
         });
-        
     } catch(e) {
         console.error('Login error:', e);
         res.status(500).json({

@@ -1,6 +1,7 @@
 // server/controllers/admin/products-controller.js
 import {imageUploadUtil, getSignature, destroyImages} from "../../helpers/cloudinary.js";
-import {insertProduct, query, updateProduct, deleteProductById} from '../../db/index.js';
+import { query } from "../../db/index.js";
+import { productService } from "../../db/product-manager.js";
 
 const getproductById = async (id, attributes=null) => {
     const qText = `SELECT ${attributes?.length == 0 ? "*" : attributes.join(',')} FROM products where _id = $1`;
@@ -45,7 +46,7 @@ const addProduct = async(req, res) =>{
                 message: "Incorrect form was submitted",
             });
         }
-        const newlyCreatedProduct =  await insertProduct({
+        const newlyCreatedProduct =  await productService.insertProduct({
             images,
             title,
             description,
@@ -121,7 +122,7 @@ const editProduct = async(req, res) => {
         product.images = images.length !== 0 ? images : product.images;
         product.tags = tags.length !== 0 ? tags : product.tags;
 
-        const result = await updateProduct({images,title,description,category,price,salePrice,totalStock,tags}, id);
+        const result = await productService.updateProduct({images,title,description,category,price,salePrice,totalStock,tags}, id);
         const deleteImages = await destroyImages(imagesToDelete);
         return res.status(200).json({
             success : true,
@@ -149,7 +150,7 @@ const deleteProduct = async (req, res) => {
                 message : "Product not found",
             })
         const imaDeleter = await destroyImages(images);
-        await deleteProductById(id).then((res) => {
+        await productService.deleteProductById(id).then((res) => {
             console.log("Deleted product", id);
         });
         return res.status(200).json({

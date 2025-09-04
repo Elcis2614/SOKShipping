@@ -1,10 +1,9 @@
 // server/server.js 
-
+import './babel-register.cjs'
 import dotenv from 'dotenv';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-
 dotenv.config();  // will read all env. created
 // Enhanced CORS configuration
 const allowedOrigins = [
