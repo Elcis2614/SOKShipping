@@ -1,51 +1,76 @@
 import Feature from '../../models/Feature.js'
+import { countFeatures, getFeatureImages as getFeatures, insertFeature, findFeatureById, deleteFeaute } from '../../db/index.js'
+import { getSignature, destroyImages } from '../../helpers/cloudinary.js'
 
-const addFeatureImage = async(req, res) => {
+const getFeatureSignature = async (req, res) => {
     try {
-        const { image } = req.body;
-        
+        const featureCount = await countFeatures();
+        if (featureCount == process.env.MAX_FEATURES) {
+            res.status(405).json({
+                success: false,
+                message: "You have maxed out the number of features"
+            })
+        }
+        else {
+            const signature = await getSignature();
+            return res.status(201).json({
+                success: true,
+                message: 'Image feature signature created',
+                data: signature
+
+            })
+        }
+    } catch (error) {
+        console.error('Error in getting Feature signature :', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred!',
+            error: "could not get Feature signature"
+        });
+    }
+}
+const addFeatureImage = async (req, res) => {
+    try {
+        const { title, subtitle, image } = req.body;
+
         if (!image) {
             return res.status(400).json({
                 success: false,
                 message: 'Image URL is required'
             });
         }
-        
-        const newFeature = new Feature({
-            image
-        });
-        
-        const savedFeature = await newFeature.save();
-        
+
+        const savedFeature = await insertFeature({ image, title, subtitle });
+
         res.status(201).json({
             success: true,
             message: 'Feature image added successfully',
             data: savedFeature
         });
-        
+
     } catch (error) {
-            //console.error('Error in adding Feature:', error);
-            res.status(500).json({
-                success : false, 
-                message: 'An error occurred!',
-                error: error.message
-            });
+        console.error('Error in adding Feature:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred!',
+            error: error.message
+        });
     }
 }
 
 const getFeatureImages = async (req, res) => {
     try {
-        const features = await Feature.find().sort({ createdAt: -1 });
-        
+        const features = await getFeatures();
+
         res.status(200).json({
             success: true,
             data: features
         });
-        
+
     } catch (error) {
-        //console.error('Error in getting Feature:', error);
+        console.error('Error in getting Feature:', error);
         res.status(500).json({
-            success : false,
+            success: false,
             message: 'An error occurred!',
             error: error.message
         });
@@ -55,28 +80,27 @@ const getFeatureImages = async (req, res) => {
 const deleteFeatureImage = async (req, res) => {
     try {
         const { id } = req.params;
-
-        const deletedFeature = await Feature.findByIdAndDelete(id);
-
-        if (!deletedFeature) {
+        const featureToDelete = await findFeatureById(id);
+        if (!featureToDelete) {
             return res.status(404).json({
                 success: false,
-                message: 'Feature image not found'
+                message: 'Feature not found'
             });
         }
-
+        await destroyImages([featureToDelete]);
+        await deleteFeaute({id});
         res.status(200).json({
             success: true,
             message: 'Feature image deleted successfully',
-            data: deletedFeature
+            data: featureToDelete
         });
 
     } catch (error) {
-        //console.error('Error in deleting Feature:', error);
+        console.error('Error in deleting Feature:', error);
         res.status(500).json({
-            success : false,
+            success: false,
             message: 'An error occurred!',
-            error: error.message
+            error: "Error occured while deleting the feature"
         });
     }
 }
@@ -84,5 +108,6 @@ const deleteFeatureImage = async (req, res) => {
 export {
     addFeatureImage,
     getFeatureImages,
-    deleteFeatureImage
+    deleteFeatureImage,
+    getFeatureSignature
 };

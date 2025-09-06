@@ -6,11 +6,15 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "build-emails:watch": "babel emails --out-dir dist/emails --extensions \".js,.jsx\" --watch",
+    "build": "npm run build-emails",
+    "dev": "concurrently \"npm run build-emails:watch\" \"nodemon server.js\""
   },
-  "author": "Idriss",
+  "author": "Elisee",
   "license": "ISC",
   "dependencies": {
+    "@react-email/components": "^0.5.1",
+    "@react-email/render": "^1.2.1",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.4.0",
@@ -21,12 +25,19 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^7.0.5",
     "paypal-rest-sdk": "^1.8.1",
     "pg": "^8.13.1",
     "punycode": "^2.3.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@babel/cli": "^7.28.3",
+    "@babel/core": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/register": "^7.28.3",
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.1.10"
   },
   "engines": {
     "node": "18.x"

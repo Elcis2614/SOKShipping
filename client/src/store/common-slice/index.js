@@ -13,7 +13,6 @@ export const getFeatureImages = createAsyncThunk(
   'common/getFeatureImages',
   async (_,{rejectWithValue}) => {
     try {
-
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/common/feature/get`,
         {
@@ -24,7 +23,6 @@ export const getFeatureImages = createAsyncThunk(
       if (!response.data.success) {
         throw new Error(response.data.message || 'Failed to get features');
       }
-
       return response.data;
     } catch (error) {
       console.error('Get Feature error:', error);

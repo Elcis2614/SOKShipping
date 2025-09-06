@@ -51,7 +51,7 @@ function App() {
   // }
 
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col overflow-hidden">
     {/** common component */}
     <Routes>
       <Route

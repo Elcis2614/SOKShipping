@@ -1,238 +1,237 @@
 // client/src/components/shopping-view/header.jsx 
 
 import { shoppingViewHeaderMenuItems } from '@/config'
-import { resetTokenAndCredentials } from '@/store/auth-slice'
-import { fetchCartItems } from '@/store/shop/cart-slice'
-import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
-import { Loader2Icon, LogOut, Menu, ShoppingCart, UserCog, User } from 'lucide-react'
-import { FaSearch } from "react-icons/fa";
-
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { 
+    Menu, 
+    Search, 
+    X
+} from 'lucide-react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { AvatarFallback, Avatar } from '../ui/avatar'
 import { Button } from '../ui/button'
-import { DropdownMenu } from '../ui/dropdown-menu'
-import { Label } from '../ui/label'
 import { SheetContent, SheetTrigger, Sheet } from '../ui/sheet'
-import UserCartWrapper from './cart-wrapper'
+import { Input } from '../ui/input'
 import logo from '../../assets/logo.jpg'
+import { HeaderRightContent } from './right-header';
 
-function MenuItems({setOpen = undefined}){
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [ searchParams, setSearchParams ] = useSearchParams();
-    
-    {/** Organizing the header menu item to fecth the appropriete product category */}
-    function handleNavigate(getCurrentItemMenuItem){
+function MenuItems({ setOpen = undefined }) {
+    const navigate = useNavigate()
+    const location = useLocation()
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    const handleNavigate = useCallback((getCurrentItemMenuItem) => {
         sessionStorage.removeItem('filters')
-        // help to navigate through the header link with appropriete pathname
-        const currentFilter =
-            getCurrentItemMenuItem.id !== 'home' && 
-            getCurrentItemMenuItem.id !== 'products' && 
-            getCurrentItemMenuItem.id !== 'search'
-            ? {
-                category : [getCurrentItemMenuItem.id]
-              } : null
         
-        sessionStorage.setItem('filters', JSON.stringify(currentFilter));
-        setOpen && setOpen(false);
-        // help to navigate through the header link with appropriete pathname 
-        if (location.pathname.includes('listing') && currentFilter !== null) {
-            setSearchParams(new URLSearchParams(`?category=${getCurrentItemMenuItem.id}`));
-          } else {
-            navigate(getCurrentItemMenuItem.path);
-          }
-    }
-    
-    return <nav className="flex flex-col space-y-4 lg:space-y-0 lg:space-x-6 lg:flex-row justify-center">
-    {
-        shoppingViewHeaderMenuItems.map((menuItem)=>
-       ( 
-       <Label 
-            onClick={()=> handleNavigate(menuItem)}
-            key={menuItem.id } 
-            className="text-sm font-medium hover:text-primary transition-colors text-left px-2 py-1.5 rounded-md hover:bg-gray-100 cursor-pointer"
-            >
-            {menuItem.label}
-        </Label>
-        )
-        )
-    }
-    </nav>
-}
+        const currentFilter = 
+            getCurrentItemMenuItem.id !== 'home' &&
+            getCurrentItemMenuItem.id !== 'products' &&
+            getCurrentItemMenuItem.id !== 'search'
+                ? { category: [getCurrentItemMenuItem.id] }
+                : null
 
-function HeaderRightContent(){
-    const {user, isAuthenticated} = useSelector((state)=> state.auth);
-    const [openCartSheet, setOpenCartSheet] = useState(false);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const { cartItems, isLoading, error } = useSelector((state) => state.shopCart);
-
-    if (error) {
-        return <div></div>;
-    }
-
-    function handleLogout(){
-        // dispatch(logoutUser());
-        dispatch(resetTokenAndCredentials())
-        sessionStorage.clear()
-        navigate('/auth/login');
-    }
-    
-    useEffect(() => {
-        if (isAuthenticated && user?.id) {
-            dispatch(fetchCartItems(user?.id));
+        if (currentFilter) {
+            sessionStorage.setItem('filters', JSON.stringify(currentFilter))
         }
-    }, [dispatch, isAuthenticated, user?.id]);
+        
+        setOpen?.(false)
+        
+        if (location.pathname.includes('listing') && currentFilter !== null) {
+            setSearchParams(new URLSearchParams(`?category=${getCurrentItemMenuItem.id}`))
+        } else {
+            navigate(getCurrentItemMenuItem.path)
+        }
+    }, [location.pathname, navigate, setSearchParams, setOpen])
 
     return (
-        <div className="flex items-center md:space-x-6 space-x-2 w-full lg:w-auto">
-            {/* Cart Button */}
-            <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
-                <Button 
-                    onClick={() => {setOpenCartSheet(true)}}
-                    variant="outline" 
-                    size="icon"
-                    className="relative flex border-none hover:bg-transparent"
-                    disabled={isLoading}
-                >
-                    {isLoading ? (
-                        <Loader2Icon className="h-4 w-4 animate-spin" />
-                    ) : (
-                        <div className='flex'>
-                            <ShoppingCart className="h-6 w-6 mr-1 items-center"/>
-                            <div className='whitespace-nowrap underline font-semibold text-[16px] hidden md:block'>Cart</div>
-                            {cartItems?.length > 0 && (
-                                <span className="absolute top-[-5px] left-[1px] bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                                    {cartItems.length}
-                                </span>
-                            )}
-                        </div>
-                    )}
-                    <span className="sr-only">User Cart</span>
-                </Button>
-                {/* Pass cartItems to the cart wrapper */}
-                <UserCartWrapper 
-                    setOpenCartSheet={setOpenCartSheet}
-                    isLoading={isLoading}
-                    cartItems={!isLoading && cartItems?.length > 0 ? cartItems : []}
-                />
-            </Sheet>
-            
-            {isAuthenticated ? 
-                <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Avatar className="bg-black hover:bg-black cursor-pointer">
-                        <AvatarFallback className="text-gray-900 font-extrabold">
-                            {user?.userName ? user.userName[0].toUpperCase() : 'U'}
-                        </AvatarFallback>
-                    </Avatar>
-                </DropdownMenuTrigger>
-                
-                <DropdownMenuContent 
-                    align="end"
-                    className="w-56 mt-2 z-50 bg-white shadow-lg rounded-lg"
-                >
-                    <DropdownMenuLabel 
-                        className="text-gray-700 font-semibold px-4 py-2 mt-2 mb-2"
+        <nav className="flex flex-col space-y-1 lg:space-y-0 lg:space-x-1 lg:flex-row lg:justify-center">
+            {shoppingViewHeaderMenuItems.map((menuItem) => {
+                const isActive = location.pathname === menuItem.path
+                return (
+                    <Button
+                        key={menuItem.id}
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleNavigate(menuItem)}
+                        className={`justify-start lg:justify-center px-4 py-2 text-sm font-medium transition-all duration-200 border border-transparent ${
+                            isActive 
+                                ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-300 font-semibold border-blue-500/30 shadow-inner' 
+                                : 'text-slate-300 hover:text-white hover:bg-slate-700/50 hover:border-slate-600/50'
+                        }`}
                     >
-                        Logged in as {user?.userName}
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                        onClick={() => navigate('/shop/account')}
-                        className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors gap-2"
-                    >
-                        <UserCog className="mr-2 h-4 w-4 text-gray-600" />  
-                        Account
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                        onClick={handleLogout}
-                        className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors gap-2"
-                    >
-                        <LogOut className="mr-2 h-4 w-4 text-gray-600"/>
-                        Logout
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-                </DropdownMenu> 
-                :
-                <Link to='/auth/login'>
-                    <div className='flex pointer-cursor items-center'>
-                        <div><User className='mr-1 h-6 w-6'/></div>
-                        <div className='whitespace-nowrap underline font-semibold text-[16px] hidden md:block'>Sign in</div>
-                    </div>
-                </Link>
-            }
-        </div>
-    );
+                        {menuItem.label}
+                    </Button>
+                )
+            })}
+        </nav>
+    )
 }
 
-function SearchBar(){
-    const navigate = useNavigate();
-    function search(event) {
-        const formData = new FormData(event.target).get("keyword");
-        navigate(`/shop/search?keyword=${encodeURIComponent(formData)}`);
-    }
-    return(
-        <div>
-            <form onSubmit={search} className="w-full max-w-xl mx-auto">
-                <div className='relative flex items-center border border-gray-300 rounded-full focus-within:border-grey-600 focus-within:ring-2 focus-within:ring-grey-500'>
-                    <FaSearch className='absolute left-3 w-5 h-5 text-gray-500 pointer-events-none' />
-                    <input
-                        name='keyword'
-                        className='w-full pl-12 pr-4 py-2 rounded-full text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-0'
-                        type="text"
-                        placeholder="Search products (minimum 2 characters)..."
-                    />
-                </div>
-            </form>
-        </div>);
+function SearchBar({ isMobile = false }) {
+    const navigate = useNavigate()
+    const [searchTerm, setSearchTerm] = useState('')
+    const [isSearchFocused, setIsSearchFocused] = useState(false)
+    const searchInputRef = useRef(null)
+
+    const handleSearch = useCallback((event) => {
+        event.preventDefault()
+        const keyword = searchTerm.trim()
+        
+        if (keyword.length < 2) {
+            searchInputRef.current?.focus()
+            return
+        }
+        
+        navigate(`/shop/search?keyword=${encodeURIComponent(keyword)}`)
+        setSearchTerm('')
+        searchInputRef.current?.blur()
+    }, [navigate, searchTerm])
+
+    const clearSearch = useCallback(() => {
+        setSearchTerm('')
+        searchInputRef.current?.focus()
+    }, [])
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k' && !isMobile) {
+                e.preventDefault()
+                searchInputRef.current?.focus()
+            }
+        }
+        
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [isMobile])
+
+    return (
+        <form onSubmit={handleSearch} className={`w-full ${isMobile ? 'max-w-sm' : 'max-w-2xl'} mx-auto`}>
+            <div className={`relative flex items-center rounded-full border-2 transition-all duration-300 ${
+                isSearchFocused 
+                    ? 'ring-2 ring-blue-400/30 border-blue-400 shadow-lg shadow-blue-500/10 bg-slate-800/80' 
+                    : 'border-slate-600/50 hover:border-slate-500/70 hover:shadow-md bg-slate-800/50'
+            } backdrop-blur-sm`}>
+                <Search className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none" />
+                <Input
+                    ref={searchInputRef}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onBlur={() => setIsSearchFocused(false)}
+                    className="w-full pl-12 pr-12 py-3 rounded-full border-0 bg-transparent placeholder:text-slate-400 text-slate-100 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
+                    type="text"
+                    placeholder={`Search products${!isMobile ? ' (⌘K)' : ''}...`}
+                    maxLength={100}
+                />
+                {searchTerm && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearSearch}
+                        className="absolute right-2 h-7 w-7 rounded-full hover:bg-slate-700/80 text-slate-400 hover:text-slate-200 transition-colors"
+                    >
+                        <X className="h-3 w-3" />
+                        <span className="sr-only">Clear search</span>
+                    </Button>
+                )}
+            </div>
+        </form>
+    )
 }
 
 function ShoppingHeader() {
-    // const {isAuthenticated} = useSelector(state=> state.auth)
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false)
+    const [isScrolled, setIsScrolled] = useState(false)
+    
+    useEffect(() => {
+        let ticking = false
+        
+        const handleScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    setIsScrolled(window.scrollY > 20)
+                    ticking = false
+                })
+                ticking = true
+            }
+        }
+        
+        window.addEventListener('scroll', handleScroll, { passive: true })
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
     return (
-        <header className="sticky top-0 z-40 w-full  bg-background">
-            <div className="flex items-center justify-between px-4 md:-6  ">
+        <header className={`fixed top-0 z-50 left-0 w-full transition-all duration-300 ${
+            isScrolled 
+                ? 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 backdrop-blur-md shadow-2xl border-b border-slate-700/50' 
+                : 'bg-gradient-to-r from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-sm'
+        }`}>
+            {/* Top Section - Logo and Desktop Search */}
+            <div className="flex items-center justify-between px-4 lg:px-6 h-16 border-b border-slate-700/30">
                 {/* Logo */}
-                <Link to='/shop/home' className="flex h-16 items-center gap-2 ">
-                <div className="relative w-full sm:w-auto max-w-full flex justify-center items-center">
-    <img 
-        src={logo} 
-        alt="Company Logo" 
-        className="w-[120px] sm:w-[150px] md:w-[180px] lg:w-[200px] max-w-full h-auto object-contain"
-    />
-</div>
+                <Link 
+                    to='/shop/home' 
+                    className="flex items-center gap-2 min-w-0 flex-shrink-0 group"
+                    aria-label="Go to homepage"
+                >
+                    <div className="relative flex justify-center items-center p-2 rounded-lg bg-gradient-to-br from-blue-600/20 to-purple-600/20 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300">
+                        <img
+                            src={logo}
+                            alt="Company Logo"
+                            className="h-8 w-auto sm:h-10 md:h-12 max-w-[100px] sm:max-w-[130px] md:max-w-[160px] object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-lg"
+                            loading="eager"
+                        />
+                    </div>
                 </Link>
-                <div className="hidden lg:block w-full">
-                    <SearchBar/>
+
+                {/* Desktop Search Bar */}
+                <div className="hidden lg:block flex-1 max-w-3xl mx-8">
+                    <SearchBar />
                 </div>
-                <div>
-                    <HeaderRightContent className="hidden lg:block"/>
-                </div> 
+
+                {/* Desktop Header Right Content */}
+                <div className="hidden lg:block flex-shrink-0">
+                    <HeaderRightContent />
+                </div>
             </div>
-            <div className="flex h-16 items-center justify-between px-4 md:-6">
+
+            {/* Bottom Section - Navigation and Mobile Search */}
+            <div className="flex items-center justify-between px-4 lg:px-6 h-14 bg-gradient-to-r from-slate-800/50 via-slate-700/50 to-slate-800/50">
                 {/* Mobile Menu Trigger */}
                 <Sheet open={open} onOpenChange={setOpen}>
                     <SheetTrigger asChild>
-                        <Button variant="outline" size="icon" className="lg:hidden">
-                            <Menu  className="h-6 w-6"/>
-                            <span className="sr-only" > Toggle header menu</span>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="lg:hidden h-9 w-9 p-0 border-slate-600/50 bg-slate-800/50 hover:bg-slate-700/80 hover:border-slate-500 text-slate-200 transition-all duration-200"
+                            aria-label="Open navigation menu"
+                        >
+                            <Menu className="h-4 w-4" />
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-full max-w-xs">
-                        <MenuItems setOpen={setOpen}/>
+                    <SheetContent side="left" className="w-full max-w-xs p-6 bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700">
+                        <div className="mt-8">
+                            <MenuItems setOpen={setOpen} />
+                        </div>
+                        <div className="mt-12 pt-6 border-t border-slate-700 lg:hidden">
+                            <HeaderRightContent />
+                        </div>
                     </SheetContent>
                 </Sheet>
-                <div className='lg:hidden'>
-                    <SearchBar/>
+
+                {/* Mobile Search Bar */}
+                <div className="lg:hidden flex-1 mx-4">
+                    <SearchBar isMobile={true} />
                 </div>
-                {/* Desktop Menu */}
-                <div className="hidden lg:block justify-center w-full">
+
+                {/* Desktop Navigation Menu */}
+                <div className="hidden lg:flex justify-center flex-1">
                     <MenuItems />
+                </div>
+
+                {/* Mobile Header Right Content */}
+                <div className="lg:hidden">
+                    <HeaderRightContent />
                 </div>
             </div>
         </header>

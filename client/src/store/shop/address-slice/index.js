@@ -8,6 +8,8 @@ const initialState ={
     addressList : []
 }
 
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/shop/address`;
+
 export const addNewAddress = createAsyncThunk(
     '/addresses/addNewAddress', 
     async(formData)=>{
@@ -25,7 +27,7 @@ export const fetchAllAddresses = createAsyncThunk(
   "/addresses/fetchAllAddresses",
   async (userId) => {
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/shop/address/get/${userId}`
+      `${API_BASE_URL}/get/${userId}`
     );
 
     return response.data;
@@ -78,6 +80,7 @@ const addressSlice = createSlice({
         .addCase(fetchAllAddresses.fulfilled, (state, action) => {
           state.isLoading = false;
           state.addressList = action.payload.data;
+          console.log("The address list : ", state.addressList);
         })
         .addCase(fetchAllAddresses.rejected, (state) => {
           state.isLoading = false;

@@ -3,36 +3,12 @@ import paypal from '../../helpers/paypal.js';
 import Order from '../../models/Order.js';
 import Cart from '../../models/Cart.js';
 import Product from '../../models/Product.js';
+import { emailService } from '../../helpers/email-service.js';
 
-
-const createOrder = async(req,res) =>{
-    // console.log('createOrder function called');
-    // console.log('Request body:', req.body);
+const createOrderPaypal = async(req,res) =>{
     try {
-        const { 
-            userId, 
-            cartId,   // Ensure cartId is part of the request
-            cartItems,
-            addressInfo,
-            orderStatus,
-            paymentMethod,
-            paymentStatus,
-            totalAmount,
-            orderDate,
-            orderUpdateDate,
-            payerId,
-            paymentId
-            } = req.body;
-            
-            // If cartId is null, fetch it from the database
-            let finalCartId = cartId;
-            if (!finalCartId) {
-                const cart = await Cart.findOne({ userId });
-                if (cart) {
-                    finalCartId = cart._id;
-                }
-            }
-            
+        const {orderData} = req.body;
+
             const create_payment_json = {
                 intent : 'sale',
                 payer : {
@@ -101,6 +77,32 @@ const createOrder = async(req,res) =>{
         
     } catch (error) {
         //console.log(error);
+        res.status(500).json({
+            success: false,
+            message: 'Error creating order',
+            error: error.message
+        })
+        
+    }
+
+}
+
+
+const createOrder = async(req,res) =>{
+    try {
+        const {cartItems} = req.body;
+        await emailService.confirmOrder({
+            destination: 'elisereflorbusole07@gmail.com',
+            subject: 'ORDER CONFIRMATION',
+            content: cartItems
+        });
+        res.status(201).json({
+            success: true,
+            approvalURL : "",
+            orderId: "newlyCreatedOrder._id"
+        })
+    } catch (error) {
+        console.log(error);
         res.status(500).json({
             success: false,
             message: 'Error creating order',

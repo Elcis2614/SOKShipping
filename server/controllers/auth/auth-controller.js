@@ -1,7 +1,6 @@
 // server/controllers/auth/auth-controller.js 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../../models/User.js';
 import * as db from '../../db/index.js';
 
 // Cookie options based on environment 
@@ -20,27 +19,22 @@ export const getCookieOptions = () => {
 export const registerUser = async(req, res) => {
     const {userName, email, password } = req.body;
     try {
-        const checkUser = await User.findOne({ email });
-        if(checkUser) {
+        const mUser = await db.isValidUser(email);
+        if(mUser) {
             return res.json({
                 success: false,
                 message: "User Already exists with the same email! Please try again"
             });
         }
         const hashPassword = await bcrypt.hash(password, 12);
-        const newUser = new User({
-            userName, 
-            email, 
-            password: hashPassword,
-        });
-        
-        await newUser.save();
+        const [fname, lname] = userName.split(' ');
+        await db.createUser({fname, lname, email, password:hashPassword});
         res.status(200).json({
             success: true,
             message: "Registration Successful",
         });
     } catch(e) {
-        //console.error('Registration error:', e);
+        console.error('Registration error:', e);
         res.status(500).json({
             success: false,
             message: "Some error occurred",
@@ -51,18 +45,16 @@ export const registerUser = async(req, res) => {
 // login
 export const loginUser = async(req, res) => {
     const { email, password } = req.body;
-    console.log("Received request for ", email, password)
     try { 
-        //const checkUser = await fetch().then((res) => res.json());
-        const checkUser = await db.query('SELECT * FROM users WHERE email = $1 AND password = $2', [email, password]);
-        if(!checkUser) {
+        //const mUser = await fetch().then((res) => res.json());
+        const mUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+        if(!mUser) {
             return res.json({
-                success: false,
-                message: "Wrong Credentials, please try again"
+                success: false, 
+                message: "Wrong Credentials"
             });
         }
-        
-        // //const checkPasswordMatch = await bcrypt.compare(password, checkUser.password);
+        const isRealPassWord = await bcrypt.compare(password, mUser[0].password);
         // const checkPasswordMatch = true;
         // if (!checkPasswordMatch) {
         //     return res.json({
@@ -72,10 +64,10 @@ export const loginUser = async(req, res) => {
         // }
         
         const user = {
-            id: checkUser[0]?._id, 
-            role: checkUser[0]?.role, 
-            email: checkUser[0]?.email,
-            userName: checkUser[0]?.userName,
+            id: mUser[0]?._id, 
+            role: mUser[0]?.role, 
+            email: mUser[0]?.email,
+            userName: mUser[0]?.fname,
         };
         console.log("Connected user : ", user);
         const token = jwt.sign(user, 'CLIENT_SECRET_KEY', { expiresIn: '120m' });
@@ -83,17 +75,11 @@ export const loginUser = async(req, res) => {
         res.cookie('token', token, getCookieOptions()).json({
             success: true,
             message: 'Logged in successfully',
-            user: {...user}
-        });
-        res.status(200).json({
-            success: true,
-            message: 'Logged in successfully',
             user: {...user},
             token: token
         });
-        
     } catch(e) {
-        //console.error('Login error:', e);
+        console.error('Login error:', e);
         res.status(500).json({
             success: false,
             message: "Some error occurred",

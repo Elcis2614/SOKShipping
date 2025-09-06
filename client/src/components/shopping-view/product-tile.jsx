@@ -9,7 +9,11 @@ import { useToast } from '@/hooks/use-toast'
 import { fetchCartItems } from '@/store/shop/cart-slice'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
-
+import { 
+    optimisticUpdateQuantity, 
+    optimisticAddToCart, 
+    confirmOptimisticAdd,
+    rollbackOptimisticAdd } from '@/store/shop/cart-slice'
 import { CardFooter, CardContent, Card } from '../ui/card'
 
 function ShoppingProductTile({product}) 
@@ -18,10 +22,10 @@ function ShoppingProductTile({product})
     const [ isUpdating, setIsUpdating ] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { cartItems} = useSelector((state) => state.shopCart); 
+    const { cartItems} = useSelector((state) =>  state.shopCart);
+    const {isAuthenticated, user} = useSelector((state) => state.auth);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const {toast} = useToast();
-    const profile = product.images.length > 0 ? product.images[0] : '';
 
     {/** Handle to display product details */}
     const handleGetProductDetails = (productId) => {
@@ -80,7 +84,6 @@ function ShoppingProductTile({product})
         if (isUpdating || remainingStock <= 0) {
             return;
         }
-
         try {
             setIsUpdating(true);
             handleAddtoCart(product);
@@ -97,22 +100,48 @@ function ShoppingProductTile({product})
     };
 
     {/** Handle Add product to Cart */}
-    const handleAddtoCart = useCallback((product) => {
-        // Set loading state while adding to cart
-        setIsAddingToCart(true);
-        dispatch(
-          addToCart({            
-            product: product
-          })
-        ).then(() => {      
-            toast({
-              title: "Product added to cart",
-            });
-          }
-        ).finally(() => {
-            setIsAddingToCart(false);  // Ensure we reset the loading state
+    const handleAddtoCart = async(product) => {
+        //Set loading state while adding to cart
+        const tempId = `temp-${product._id}-${Date.now()}`;
+        const isExistingItem = cartItems.some(item => item.productId?._id === product._id);
+        if(isAuthenticated){
+            setIsAddingToCart(true);
+            dispatch(optimisticAddToCart({productData: product, quantity:1, userId:user?._id}))
+            toast(`${product.title} added to cart!`, {
+                duration: 2000,
+                icon: '🛒'
+            })
+            setIsAddingToCart(false);
+            dispatch(
+                addToCart({       
+                    userId: user?._id,     
+                    productId: product?._id
+            })
+            ).then((result) => {  
+                if(result.payload.data?.item && !isExistingItem)    
+                dispatch(confirmOptimisticAdd({
+                    tempId,
+                    realItem: result.payload.data.item
+            }));
+          }).catch((err) => {
+                dispatch(rollbackOptimisticAdd({
+                    tempId: isExistingItem ? null : tempId,
+                    productId: isExistingItem ? product?._id : null
+                }));
+                toast({
+                    title: "Error",
+                    description: err?.payload || "Failed to add to cart"
+                });
           });
-       }, [cartItems, dispatch]);
+        }
+        else{
+            toast({
+                title: "Error",
+                description: "Please log in to add the items to the cart",
+                variant: "destructive"
+            });
+        }
+    }
     
     if (!product) return null;
     const isOutOfStock = remainingStock <= 0;
@@ -125,7 +154,7 @@ function ShoppingProductTile({product})
                 <div className="relative">
                     <img
                         id={product.id}
-                        src={profile}
+                        src={product?.primary_image}
                         alt={product?.title || 'Product Image'}
                         className="w-full h-[300px] object-cover rounded-t-lg"
                     />

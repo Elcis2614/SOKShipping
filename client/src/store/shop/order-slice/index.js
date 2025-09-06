@@ -16,9 +16,8 @@ export const createNewOrder = createAsyncThunk(
     '/order/createNewOrder',
     async (orderData) => {
         try {
-            // console.log("Sending order data to server:", orderData);
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/shop/order/create`,  // Ensure this is the correct URL
+                `${import.meta.env.VITE_API_URL}/api/shop/order/create`,
                 orderData
             );
             // console.log("Response from server:", response.data);
