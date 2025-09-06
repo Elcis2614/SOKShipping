@@ -3,7 +3,7 @@ import paypal from '../../helpers/paypal.js';
 import Order from '../../models/Order.js';
 import Cart from '../../models/Cart.js';
 import Product from '../../models/Product.js';
-import { emailService } from '../../helpers/email-service.jsx';
+import { emailService } from '../../helpers/email-service.js';
 
 const createOrderPaypal = async(req,res) =>{
     try {

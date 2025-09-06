@@ -9,6 +9,19 @@
             "database": "postgres",
             "username": "postgres",
             "password": "mysecretpassword"
+        },
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": true
+                }
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "PostgreSQL",
+            "connectString": "postgresql://ock_database_user:3u9qxTnYEIccCchJN1YNhDS4xGFShy7Q@dpg-d2u2vg7fte5s73aog9ng-a.oregon-postgres.render.com/ock_database",
+            "name": "ock_badabase"
         }
     ]
 }
