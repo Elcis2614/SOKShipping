@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import { render } from "@react-email/render";
-import GetFormated from '../dist/emails/email-formatter.js';
+import GetFormated from '../dist/emails/email-formatter';
 
 export const emailService = {
     async confirmOrder({ destination, subject, content }) {
